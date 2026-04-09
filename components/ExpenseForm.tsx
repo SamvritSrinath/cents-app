@@ -6,7 +6,7 @@
  * Form component for creating and editing expenses.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -38,8 +38,10 @@ import { ReceiptScanner } from './ReceiptScanner';
 import { suggestCategoryIdFromReceiptInput } from '../lib/receiptCategorization';
 import { normalizeExpenseDateFromOcr } from '../lib/receiptOcr';
 import { getCategoryIcon } from '../lib/categoryIcons';
-import { formatCurrency } from '../lib/utils';
-import { colors, typography, spacing } from '../theme';
+import { formatCurrency, toLocalISODateString } from '../lib/utils';
+import { typography, spacing } from '../theme';
+import { AppColors } from '../theme/colors';
+import { useTheme } from '../contexts/ThemeContext';
 
 const LINE_SUM_TOLERANCE = 0.02;
 
@@ -71,6 +73,8 @@ export function ExpenseForm({
   enableReceiptScan = false,
   currency = 'USD',
 }: ExpenseFormProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const { width: screenW } = useWindowDimensions();
   const panelW = Math.round(screenW * 0.88);
@@ -86,7 +90,7 @@ export function ExpenseForm({
   );
   const [receiptUrl, setReceiptUrl] = useState(initialData?.receipt_url || '');
   const [expenseDate, setExpenseDate] = useState(
-    initialData?.expense_date || new Date().toISOString().split('T')[0]
+    initialData?.expense_date || toLocalISODateString(new Date())
   );
   const [showMainCategoryPicker, setShowMainCategoryPicker] = useState(false);
   const [pickingLineIndex, setPickingLineIndex] = useState<number | null>(null);
@@ -587,7 +591,8 @@ export function ExpenseForm({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -869,3 +874,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+}

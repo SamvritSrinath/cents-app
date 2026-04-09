@@ -71,7 +71,10 @@ export function getColorsForTheme(theme: ResolvedTheme): AppColors {
   return theme === 'light' ? lightColors : darkColors;
 }
 
-// Keep dark as default for legacy imports.
+/**
+ * Dark palette only. Prefer `useTheme().colors` from ThemeContext in UI so
+ * light/dark/system preference applies; do not import this for screens/components.
+ */
 export const colors: AppColors = darkColors;
 
 export default colors;

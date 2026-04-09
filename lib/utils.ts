@@ -1,5 +1,34 @@
 // Utility functions
 
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * YYYY-MM-DD for the device's local calendar day (not UTC).
+ */
+export function toLocalISODateString(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Parse a value for display/filtering: date-only strings are local calendar dates;
+ * other strings use the Date parser (timestamps with time/offset).
+ */
+export function parseCalendarOrDateString(input: string | Date): Date {
+  if (input instanceof Date) return input;
+  if (DATE_ONLY_RE.test(input)) {
+    const [y, mo, d] = input.split('-').map(Number);
+    return new Date(y, mo - 1, d);
+  }
+  return new Date(input);
+}
+
+function startOfLocalDay(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
 /**
  * Format currency for display
  */
@@ -25,7 +54,7 @@ export function formatDate(
     day: 'numeric',
   }
 ): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = typeof date === 'string' ? parseCalendarOrDateString(date) : date;
   return d.toLocaleDateString('en-US', options);
 }
 
@@ -33,15 +62,17 @@ export function formatDate(
  * Format relative date (e.g., "Today", "Yesterday", "Dec 15")
  */
 export function formatRelativeDate(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = typeof date === 'string' ? parseCalendarOrDateString(date) : date;
   const now = new Date();
-  const diffDays = Math.floor(
-    (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24)
+  const diffDays = Math.round(
+    (startOfLocalDay(now) - startOfLocalDay(d)) / (1000 * 60 * 60 * 24)
   );
 
   if (diffDays === 0) return 'Today';
   if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
+  if (diffDays > 1 && diffDays < 7) {
+    return d.toLocaleDateString('en-US', { weekday: 'long' });
+  }
   return formatDate(d);
 }
 

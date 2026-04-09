@@ -6,10 +6,13 @@
  * Pie/Donut chart showing spending by category.
  */
 
+import { useMemo } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
 import { CategorySpending } from '../../hooks/useDashboard';
-import { colors, typography, spacing } from '../../theme';
+import { useTheme } from '../../contexts/ThemeContext';
+import { typography, spacing } from '../../theme';
+import { AppColors } from '../../theme/colors';
 import { formatCurrency } from '../../lib/utils';
 
 interface CategoryPieChartProps {
@@ -23,6 +26,8 @@ export function CategoryPieChart({
   size: sizeProp,
   currency = 'USD',
 }: CategoryPieChartProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { width: winW } = useWindowDimensions();
   const defaultSize = Math.min(168, Math.max(132, Math.floor(winW * 0.36)));
   const size = sizeProp ?? defaultSize;
@@ -53,7 +58,7 @@ export function CategoryPieChart({
           donut
           radius={size / 2}
           innerRadius={innerR}
-          innerCircleColor={colors.background}
+          innerCircleColor={colors.card}
           centerLabelComponent={() => (
             <View style={[styles.centerLabel, { maxWidth: labelMaxW }]}>
               <Text
@@ -102,74 +107,76 @@ export function CategoryPieChart({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  chartContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  emptyContainer: {
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.text.muted,
-  },
-  centerLabel: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 2,
-  },
-  centerAmount: {
-    fontSize: 17,
-    lineHeight: 22,
-    color: colors.text.primary,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  centerSubtext: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-    textAlign: 'center',
-  },
-  totalCaption: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  legend: {
-    width: '100%',
-    paddingHorizontal: spacing.sm,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.xs,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: spacing.sm,
-  },
-  legendText: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    flex: 1,
-  },
-  legendAmount: {
-    ...typography.caption,
-    color: colors.text.primary,
-    fontWeight: '500',
-    maxWidth: '42%',
-    textAlign: 'right',
-  },
-});
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      width: '100%',
+    },
+    chartContainer: {
+      alignItems: 'center',
+      marginBottom: spacing.sm,
+    },
+    emptyContainer: {
+      height: 200,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    emptyText: {
+      ...typography.body,
+      color: colors.text.muted,
+    },
+    centerLabel: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 2,
+    },
+    centerAmount: {
+      fontSize: 17,
+      lineHeight: 22,
+      color: colors.text.primary,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    centerSubtext: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+      textAlign: 'center',
+    },
+    totalCaption: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      fontWeight: '600',
+      marginBottom: spacing.sm,
+      textAlign: 'center',
+    },
+    legend: {
+      width: '100%',
+      paddingHorizontal: spacing.sm,
+    },
+    legendItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing.xs,
+    },
+    legendDot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      marginRight: spacing.sm,
+    },
+    legendText: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      flex: 1,
+    },
+    legendAmount: {
+      ...typography.caption,
+      color: colors.text.primary,
+      fontWeight: '500',
+      maxWidth: '42%',
+      textAlign: 'right',
+    },
+  });
+}

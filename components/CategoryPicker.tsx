@@ -6,6 +6,7 @@
  * Bottom sheet component for selecting expense categories.
  */
 
+import { useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,7 +17,9 @@ import {
 } from 'react-native';
 import { X, Check, Tag } from 'lucide-react-native';
 import { Category } from '../types/database';
-import { colors, typography, spacing } from '../theme';
+import { typography, spacing } from '../theme';
+import { AppColors } from '../theme/colors';
+import { useTheme } from '../contexts/ThemeContext';
 import { getCategoryIcon } from '../lib/categoryIcons';
 
 interface CategoryPickerProps {
@@ -37,6 +40,9 @@ export function CategoryPicker({
   onClose,
   title = 'Select Category',
 }: CategoryPickerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Modal
       visible={visible}
@@ -113,7 +119,8 @@ export function CategoryPicker({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -171,3 +178,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+}

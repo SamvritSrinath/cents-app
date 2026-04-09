@@ -7,14 +7,18 @@
  */
 
 import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import { Wallet, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
-import { colors, typography, spacing } from '../../theme';
+import { typography, spacing } from '../../theme';
+import { AppColors } from '../../theme/colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function SignupScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -167,7 +171,8 @@ export default function SignupScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -258,3 +263,4 @@ const styles = StyleSheet.create({
     color: colors.accent.default,
   },
 });
+}

@@ -3,6 +3,7 @@
  */
 
 import * as ImageManipulator from 'expo-image-manipulator';
+import { toLocalISODateString } from './utils';
 
 import { ParsedReceipt } from '../types/database';
 
@@ -83,7 +84,7 @@ export function normalizeExpenseDateFromOcr(
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
   const d = new Date(s);
   if (!Number.isNaN(d.getTime())) {
-    return d.toISOString().split('T')[0];
+    return toLocalISODateString(d);
   }
   return s;
 }

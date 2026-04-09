@@ -6,7 +6,7 @@
  * Screen for viewing and editing an expense.
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -27,10 +27,14 @@ import {
   CreateExpenseData,
 } from '../../hooks/useExpenses';
 import { useCategories } from '../../hooks/useCategories';
-import { colors, typography, spacing } from '../../theme';
+import { typography, spacing } from '../../theme';
+import { AppColors } from '../../theme/colors';
+import { useTheme } from '../../contexts/ThemeContext';
 import { formatCurrency, formatDate } from '../../lib/utils';
 
 export default function ExpenseDetailScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -201,12 +205,12 @@ export default function ExpenseDetailScreen() {
             </Text>
           </View>
 
-          {expense.description && (
-            <View style={styles.detailRow}>
+          {expense.description ? (
+            <View style={styles.detailNotesBlock}>
               <Text style={styles.detailLabel}>Notes</Text>
-              <Text style={styles.detailValue}>{expense.description}</Text>
+              <Text style={styles.detailNotesBody}>{expense.description}</Text>
             </View>
-          )}
+          ) : null}
 
           {expense.receipt_url && (
             <View style={styles.detailRow}>
@@ -250,7 +254,8 @@ export default function ExpenseDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -339,6 +344,18 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.text.primary,
   },
+  detailNotesBlock: {
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    alignSelf: 'stretch',
+  },
+  detailNotesBody: {
+    ...typography.body,
+    color: colors.text.primary,
+    marginTop: spacing.xs,
+    width: '100%',
+  },
   linkButton: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
@@ -405,3 +422,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+}

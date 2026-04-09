@@ -2,7 +2,7 @@
  * Receipt capture via system camera / photo library, then PaddleOCR API (same contract as expensely web).
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -21,7 +21,9 @@ import {
   prepareReceiptImageForOcr,
   scanReceiptFromUri,
 } from '../lib/receiptOcr';
-import { colors, typography, spacing } from '../theme';
+import { typography, spacing } from '../theme';
+import { AppColors } from '../theme/colors';
+import { useTheme } from '../contexts/ThemeContext';
 
 export interface ReceiptScannerProps {
   onScan: (data: ParsedReceipt) => void;
@@ -31,6 +33,8 @@ export interface ReceiptScannerProps {
 type ScanStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [status, setStatus] = useState<ScanStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [previewUri, setPreviewUri] = useState<string | null>(null);
@@ -267,7 +271,8 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
   card: {
     borderWidth: 2,
     borderStyle: 'dashed',
@@ -437,3 +442,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}

@@ -14,12 +14,14 @@ import {
   Pressable,
   Switch,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import { Wallet, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
-import { colors, typography, spacing } from '../../theme';
+import { typography, spacing } from '../../theme';
+import { AppColors } from '../../theme/colors';
+import { useTheme } from '../../contexts/ThemeContext';
 import {
   clearSavedEmail,
   loadDevicePreferences,
@@ -29,6 +31,8 @@ import {
 } from '../../lib/devicePreferences';
 
 export default function LoginScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -193,7 +197,8 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -299,3 +304,4 @@ const styles = StyleSheet.create({
     color: colors.accent.default,
   },
 });
+}

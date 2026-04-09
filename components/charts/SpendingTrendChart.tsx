@@ -10,7 +10,9 @@ import { useState, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { MonthlySpending } from '../../hooks/useDashboard';
-import { colors, typography, spacing } from '../../theme';
+import { useTheme } from '../../contexts/ThemeContext';
+import { typography, spacing as spacingTokens } from '../../theme';
+import { AppColors } from '../../theme/colors';
 import { formatCurrency } from '../../lib/utils';
 
 interface SpendingTrendChartProps {
@@ -27,6 +29,8 @@ export function SpendingTrendChart({
   height = 200,
   currency = 'USD',
 }: SpendingTrendChartProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [chartWidth, setChartWidth] = useState(0);
 
   const chartData = useMemo(
@@ -38,7 +42,7 @@ export function SpendingTrendChart({
     [data]
   );
 
-  const spacing = useMemo(() => {
+  const pointSpacing = useMemo(() => {
     const n = chartData.length;
     const w = chartWidth > 0 ? chartWidth : 280;
     if (n <= 1) return 0;
@@ -46,6 +50,51 @@ export function SpendingTrendChart({
   }, [chartData.length, chartWidth]);
 
   const maxValue = Math.max(...(data || []).map((d) => d.amount), 100);
+
+  const pointerConfig = useMemo(
+    () => ({
+      pointerStripColor: colors.accent.default,
+      pointerStripWidth: 1.5,
+      pointerColor: colors.accent.default,
+      radius: 5,
+      pointerLabelWidth: 128,
+      pointerLabelHeight: 48,
+      autoAdjustPointerLabelPosition: true,
+      pointerLabelComponent: (
+        items: unknown,
+        _secondaryItems: unknown,
+        pointerIndex: number
+      ) => {
+        const list = Array.isArray(items) ? items : [];
+        const first = list[0] as { value?: number } | undefined;
+        const raw = first?.value;
+        const value =
+          typeof raw === 'number' && !Number.isNaN(raw) ? raw : 0;
+        const monthLabel =
+          pointerIndex >= 0 && pointerIndex < chartData.length
+            ? chartData[pointerIndex]?.label ?? ''
+            : '';
+        return (
+          <View
+            style={[
+              styles.tooltipContainer,
+              { borderColor: colors.border, backgroundColor: colors.card },
+            ]}
+          >
+            {monthLabel ? (
+              <Text style={[styles.tooltipMonth, { color: colors.text.muted }]}>
+                {monthLabel}
+              </Text>
+            ) : null}
+            <Text style={[styles.tooltipText, { color: colors.text.primary }]}>
+              {formatCurrency(value, currency)}
+            </Text>
+          </View>
+        );
+      },
+    }),
+    [chartData, colors, currency, styles]
+  );
 
   if (!data || data.length === 0) {
     return (
@@ -91,59 +140,56 @@ export function SpendingTrendChart({
         xAxisLabelTextStyle={styles.axisLabel}
         initialSpacing={INITIAL_SPACING}
         endSpacing={END_SPACING}
-        spacing={spacing}
+        spacing={pointSpacing}
         maxValue={maxValue * 1.2}
-        pointerConfig={{
-          pointerStripColor: colors.accent.default,
-          pointerStripWidth: 1.5,
-          pointerColor: colors.accent.default,
-          radius: 5,
-          pointerLabelWidth: 100,
-          pointerLabelHeight: 35,
-          pointerLabelComponent: (items: { value: number }[]) => {
-            return (
-              <View style={styles.tooltipContainer}>
-                <Text style={styles.tooltipText}>
-                  {formatCurrency(items[0].value, currency)}
-                </Text>
-              </View>
-            );
-          },
-        }}
+        disableScroll
+        nestedScrollEnabled
+        labelsExtraHeight={28}
+        xAxisLabelsHeight={24}
+        overflowBottom={6}
+        pointerConfig={pointerConfig}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: spacing.sm,
-    width: '100%',
-  },
-  emptyContainer: {
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.text.muted,
-  },
-  axisLabel: {
-    ...typography.caption,
-    color: colors.text.muted,
-  },
-  tooltipContainer: {
-    backgroundColor: colors.card,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  tooltipText: {
-    ...typography.caption,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-});
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      paddingTop: spacingTokens.sm,
+      paddingBottom: spacingTokens.md,
+      width: '100%',
+    },
+    emptyContainer: {
+      height: 200,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    emptyText: {
+      ...typography.body,
+      color: colors.text.muted,
+    },
+    axisLabel: {
+      ...typography.caption,
+      color: colors.text.muted,
+      width: '100%',
+    },
+    tooltipContainer: {
+      paddingHorizontal: spacingTokens.sm,
+      paddingVertical: spacingTokens.xs,
+      borderRadius: 8,
+      borderWidth: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    tooltipMonth: {
+      ...typography.caption,
+      fontSize: 11,
+      marginBottom: 2,
+    },
+    tooltipText: {
+      ...typography.caption,
+      fontWeight: '700',
+    },
+  });
+}

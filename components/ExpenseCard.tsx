@@ -6,10 +6,13 @@
  * Card component for displaying an expense in a list.
  */
 
+import { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Layers } from 'lucide-react-native';
 import { ExpenseWithCategory } from '../hooks/useExpenses';
-import { colors, typography, spacing } from '../theme';
+import { typography, spacing } from '../theme';
+import { AppColors } from '../theme/colors';
+import { useTheme } from '../contexts/ThemeContext';
 import { formatCurrency, formatRelativeDate } from '../lib/utils';
 import { getCategoryIcon } from '../lib/categoryIcons';
 
@@ -19,6 +22,8 @@ interface ExpenseCardProps {
 }
 
 export function ExpenseCard({ expense, onPress }: ExpenseCardProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const categoryColor = expense.categories?.color || colors.text.muted;
   const categoryName = expense.categories?.name || 'Uncategorized';
   const categoryIcon = getCategoryIcon(categoryName, expense.categories?.icon);
@@ -66,67 +71,69 @@ export function ExpenseCard({ expense, onPress }: ExpenseCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  details: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  merchant: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '500',
-  },
-  category: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-  },
-  amountColumn: {
-    alignItems: 'flex-end',
-    gap: 4,
-  },
-  splitBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: `${colors.accent.default}18`,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  splitBadgeText: {
-    ...typography.caption,
-    fontSize: 10,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-  amount: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '600',
-  },
-  categoryEmoji: {
-    fontSize: 20,
-  },
-});
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: spacing.md,
+      marginBottom: spacing.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    pressed: {
+      opacity: 0.7,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: spacing.md,
+    },
+    details: {
+      flex: 1,
+      marginRight: spacing.sm,
+    },
+    merchant: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '500',
+    },
+    category: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+    },
+    amountColumn: {
+      alignItems: 'flex-end',
+      gap: 4,
+    },
+    splitBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      backgroundColor: `${colors.accent.default}18`,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 6,
+    },
+    splitBadgeText: {
+      ...typography.caption,
+      fontSize: 10,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    amount: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '600',
+    },
+    categoryEmoji: {
+      fontSize: 20,
+    },
+  });
+}

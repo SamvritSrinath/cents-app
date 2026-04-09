@@ -7,6 +7,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
+import { toLocalISODateString } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 import {
   aggregateSpendingByCategory,
@@ -46,8 +47,8 @@ function getMonthRange(monthsAgo: number = 0) {
   const end = new Date(now.getFullYear(), now.getMonth() - monthsAgo + 1, 0);
 
   return {
-    start: start.toISOString().split('T')[0],
-    end: end.toISOString().split('T')[0],
+    start: toLocalISODateString(start),
+    end: toLocalISODateString(end),
   };
 }
 
