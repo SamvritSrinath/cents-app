@@ -7,8 +7,19 @@
  */
 
 import { useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import { Plus, Receipt } from 'lucide-react-native';
 import { ExpenseCard } from '../../components/ExpenseCard';
@@ -20,7 +31,10 @@ import { AppColors } from '../../theme/colors';
 export default function ExpensesScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors, insets.bottom), [colors, insets.bottom]);
+  const styles = useMemo(
+    () => createStyles(colors, insets.bottom),
+    [colors, insets.bottom]
+  );
   const {
     data,
     isLoading,
@@ -129,87 +143,87 @@ function createStyles(colors: AppColors, bottomInset: number) {
   const fabBottom = spacing.lg + bottomInset;
   const listPadBottom = spacing.xxl + 56 + spacing.lg + bottomInset;
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  title: {
-    ...typography.heading1,
-    color: colors.text.primary,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing.md,
-  },
-  retryButton: {
-    backgroundColor: colors.accent.default,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '600',
-  },
-  listContent: {
-    padding: spacing.md,
-    paddingBottom: listPadBottom,
-  },
-  emptyListContent: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  emptyText: {
-    ...typography.heading3,
-    color: colors.text.secondary,
-    marginTop: spacing.md,
-  },
-  emptySubtext: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-    textAlign: 'center',
-  },
-  footerLoader: {
-    paddingVertical: spacing.md,
-  },
-  fab: {
-    position: 'absolute',
-    right: spacing.lg,
-    bottom: fabBottom,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.accent.default,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    title: {
+      ...typography.heading1,
+      color: colors.text.primary,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.xl,
+    },
+    errorText: {
+      ...typography.body,
+      color: colors.text.secondary,
+      marginBottom: spacing.md,
+    },
+    retryButton: {
+      backgroundColor: colors.accent.default,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.lg,
+      borderRadius: 8,
+    },
+    retryButtonText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '600',
+    },
+    listContent: {
+      padding: spacing.md,
+      paddingBottom: listPadBottom,
+    },
+    emptyListContent: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    emptyState: {
+      alignItems: 'center',
+      padding: spacing.xl,
+    },
+    emptyText: {
+      ...typography.heading3,
+      color: colors.text.secondary,
+      marginTop: spacing.md,
+    },
+    emptySubtext: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+      textAlign: 'center',
+    },
+    footerLoader: {
+      paddingVertical: spacing.md,
+    },
+    fab: {
+      position: 'absolute',
+      right: spacing.lg,
+      bottom: fabBottom,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: colors.accent.default,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 4,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+    },
   });
 }

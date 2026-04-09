@@ -77,7 +77,9 @@ function SettingsItem({
       </View>
       <View style={styles.settingsItemRight}>
         {trailing}
-        {!trailing && value && <Text style={styles.settingsItemValue}>{value}</Text>}
+        {!trailing && value && (
+          <Text style={styles.settingsItemValue}>{value}</Text>
+        )}
         {!trailing && showChevron && (
           <ChevronRight size={20} color={colors.text.muted} />
         )}
@@ -264,8 +266,9 @@ export default function SettingsScreen() {
               icon={<Palette size={20} color={colors.text.secondary} />}
               label="Theme"
               value={
-                THEME_OPTIONS.find((option) => option.key === preferences.themePreference)
-                  ?.label || 'Dark'
+                THEME_OPTIONS.find(
+                  (option) => option.key === preferences.themePreference
+                )?.label || 'Dark'
               }
               onPress={() => router.push('/settings/theme' as Href)}
             />
@@ -291,7 +294,10 @@ export default function SettingsScreen() {
                     })
                   }
                   disabled={preferencesLoading}
-                  trackColor={{ false: colors.border, true: colors.accent.dark }}
+                  trackColor={{
+                    false: colors.border,
+                    true: colors.accent.dark,
+                  }}
                   thumbColor={
                     preferences.notificationsEnabled
                       ? colors.accent.default
@@ -317,7 +323,10 @@ export default function SettingsScreen() {
                     })
                   }
                   disabled={preferencesLoading}
-                  trackColor={{ false: colors.border, true: colors.accent.dark }}
+                  trackColor={{
+                    false: colors.border,
+                    true: colors.accent.dark,
+                  }}
                   thumbColor={
                     preferences.receiptAlertsEnabled
                       ? colors.accent.default
@@ -343,7 +352,10 @@ export default function SettingsScreen() {
                     })
                   }
                   disabled={preferencesLoading}
-                  trackColor={{ false: colors.border, true: colors.accent.dark }}
+                  trackColor={{
+                    false: colors.border,
+                    true: colors.accent.dark,
+                  }}
                   thumbColor={
                     preferences.dailySummaryEnabled
                       ? colors.accent.default
@@ -360,7 +372,8 @@ export default function SettingsScreen() {
             <Pressable
               style={[
                 styles.testNotificationButton,
-                !notificationsSupported && styles.testNotificationButtonDisabled,
+                !notificationsSupported &&
+                  styles.testNotificationButtonDisabled,
               ]}
               onPress={async () => {
                 if (!notificationsSupported) {
@@ -380,7 +393,10 @@ export default function SettingsScreen() {
                   return;
                 }
 
-                Alert.alert('Notification queued', 'A test notification was sent.');
+                Alert.alert(
+                  'Notification queued',
+                  'A test notification was sent.'
+                );
               }}
             >
               <Text style={styles.testNotificationButtonText}>
@@ -417,7 +433,10 @@ export default function SettingsScreen() {
                     })
                   }
                   disabled={preferencesLoading}
-                  trackColor={{ false: colors.border, true: colors.accent.dark }}
+                  trackColor={{
+                    false: colors.border,
+                    true: colors.accent.dark,
+                  }}
                   thumbColor={
                     preferences.rememberEmailEnabled
                       ? colors.accent.default
@@ -504,177 +523,177 @@ export default function SettingsScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  title: {
-    ...typography.heading1,
-    color: colors.text.primary,
-  },
-  section: {
-    padding: spacing.md,
-    paddingBottom: 0,
-  },
-  sectionLabel: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginBottom: spacing.sm,
-    marginLeft: spacing.xs,
-  },
-  sectionHint: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.sm,
-    lineHeight: 18,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  testNotificationButton: {
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.md,
-    borderRadius: 10,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-    backgroundColor: `${colors.accent.default}20`,
-    borderWidth: 1,
-    borderColor: `${colors.accent.default}55`,
-  },
-  testNotificationButtonText: {
-    ...typography.caption,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-  testNotificationButtonDisabled: {
-    opacity: 0.5,
-  },
-  profileCard: {
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  profileInfo: {
-    marginLeft: spacing.md,
-    flex: 1,
-  },
-  profileName: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  profileEmail: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    marginTop: 2,
-  },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  settingsItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-  },
-  settingsItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    flex: 1,
-  },
-  settingsItemLabel: {
-    ...typography.body,
-    color: colors.text.primary,
-    flex: 1,
-  },
-  settingsItemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  settingsItemValue: {
-    ...typography.caption,
-    color: colors.text.muted,
-  },
-  dangerText: {
-    color: colors.semantic.error,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginLeft: spacing.md + 20 + spacing.md,
-  },
-  editNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  nameInput: {
-    ...typography.heading3,
-    color: colors.text.primary,
-    flex: 1,
-    padding: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.accent.default,
-  },
-  editActions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  editActionButton: {
-    padding: spacing.xs,
-  },
-  namePressable: {
-    flexDirection: 'column',
-  },
-  editLabel: {
-    ...typography.caption,
-    color: colors.accent.default,
-    fontSize: 10,
-    marginTop: 2,
-  },
-  clearSavedButton: {
-    marginTop: spacing.xs,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  clearSavedButtonText: {
-    ...typography.caption,
-    color: colors.semantic.error,
-    fontWeight: '600',
-  },
-  clearSavedButtonTextDisabled: {
-    opacity: 0.4,
-  },
-  version: {
-    ...typography.caption,
-    color: colors.text.muted,
-    textAlign: 'center',
-    marginTop: spacing.xl,
-    marginBottom: spacing.md,
-  },
-  bottomSpacer: {
-    height: spacing.xl,
-  },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    title: {
+      ...typography.heading1,
+      color: colors.text.primary,
+    },
+    section: {
+      padding: spacing.md,
+      paddingBottom: 0,
+    },
+    sectionLabel: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginBottom: spacing.sm,
+      marginLeft: spacing.xs,
+    },
+    sectionHint: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.sm,
+      lineHeight: 18,
+      paddingHorizontal: spacing.md,
+      paddingBottom: spacing.sm,
+    },
+    testNotificationButton: {
+      marginHorizontal: spacing.md,
+      marginBottom: spacing.md,
+      borderRadius: 10,
+      paddingVertical: spacing.sm,
+      alignItems: 'center',
+      backgroundColor: `${colors.accent.default}20`,
+      borderWidth: 1,
+      borderColor: `${colors.accent.default}55`,
+    },
+    testNotificationButtonText: {
+      ...typography.caption,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    testNotificationButtonDisabled: {
+      opacity: 0.5,
+    },
+    profileCard: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    avatar: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    profileInfo: {
+      marginLeft: spacing.md,
+      flex: 1,
+    },
+    profileName: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    profileEmail: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      marginTop: 2,
+    },
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    settingsItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: spacing.md,
+    },
+    settingsItemLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      flex: 1,
+    },
+    settingsItemLabel: {
+      ...typography.body,
+      color: colors.text.primary,
+      flex: 1,
+    },
+    settingsItemRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    settingsItemValue: {
+      ...typography.caption,
+      color: colors.text.muted,
+    },
+    dangerText: {
+      color: colors.semantic.error,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.border,
+      marginLeft: spacing.md + 20 + spacing.md,
+    },
+    editNameRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.sm,
+    },
+    nameInput: {
+      ...typography.heading3,
+      color: colors.text.primary,
+      flex: 1,
+      padding: 0,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.accent.default,
+    },
+    editActions: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    editActionButton: {
+      padding: spacing.xs,
+    },
+    namePressable: {
+      flexDirection: 'column',
+    },
+    editLabel: {
+      ...typography.caption,
+      color: colors.accent.default,
+      fontSize: 10,
+      marginTop: 2,
+    },
+    clearSavedButton: {
+      marginTop: spacing.xs,
+      paddingVertical: spacing.sm,
+      alignItems: 'center',
+    },
+    clearSavedButtonText: {
+      ...typography.caption,
+      color: colors.semantic.error,
+      fontWeight: '600',
+    },
+    clearSavedButtonTextDisabled: {
+      opacity: 0.4,
+    },
+    version: {
+      ...typography.caption,
+      color: colors.text.muted,
+      textAlign: 'center',
+      marginTop: spacing.xl,
+      marginBottom: spacing.md,
+    },
+    bottomSpacer: {
+      height: spacing.xl,
+    },
   });
 }

@@ -1,6 +1,9 @@
 import { User } from '@supabase/supabase-js';
 
-export function getUserDisplayName(user: User | null, fullName?: string | null): string {
+export function getUserDisplayName(
+  user: User | null,
+  fullName?: string | null
+): string {
   const trimmedProfileName = fullName?.trim();
   if (trimmedProfileName) return trimmedProfileName;
 

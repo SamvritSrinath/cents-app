@@ -56,4 +56,38 @@ describe('aggregateSpendingByCategory', () => {
     ]);
     expect(map.get('grocery')?.amount).toBe(15);
   });
+
+  it('respects custom uncategorized label and color', () => {
+    const map = aggregateSpendingByCategory(
+      [
+        {
+          amount: 10,
+          category_id: null,
+          categories: null,
+        },
+      ],
+      'Other',
+      '#ff00ff'
+    );
+    const row = map.get(null);
+    expect(row?.amount).toBe(10);
+    expect(row?.name).toBe('Other');
+    expect(row?.color).toBe('#ff00ff');
+  });
+
+  it('sums multiple expenses in the same category without line items', () => {
+    const map = aggregateSpendingByCategory([
+      {
+        amount: 40,
+        category_id: 'c1',
+        categories: cat('One', '#111'),
+      },
+      {
+        amount: 60,
+        category_id: 'c1',
+        categories: cat('One', '#111'),
+      },
+    ]);
+    expect(map.get('c1')?.amount).toBe(100);
+  });
 });

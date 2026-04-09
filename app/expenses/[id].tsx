@@ -7,12 +7,25 @@
  */
 
 import { useState } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator, Pressable, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  Pressable,
+  Linking,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Trash2, Edit3, ArrowLeft } from 'lucide-react-native';
 import { ExpenseForm } from '../../components/ExpenseForm';
-import { useExpense, useUpdateExpense, useDeleteExpense, CreateExpenseData } from '../../hooks/useExpenses';
+import {
+  useExpense,
+  useUpdateExpense,
+  useDeleteExpense,
+  CreateExpenseData,
+} from '../../hooks/useExpenses';
 import { useCategories } from '../../hooks/useCategories';
 import { colors, typography, spacing } from '../../theme';
 import { formatCurrency, formatDate } from '../../lib/utils';
@@ -28,7 +41,7 @@ export default function ExpenseDetailScreen() {
 
   const handleUpdate = async (data: CreateExpenseData) => {
     if (!id) return;
-    
+
     try {
       await updateExpense.mutateAsync({ id, ...data });
       setIsEditing(false);
@@ -56,7 +69,9 @@ export default function ExpenseDetailScreen() {
             } catch (error) {
               Alert.alert(
                 'Error',
-                error instanceof Error ? error.message : 'Failed to delete expense'
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to delete expense'
               );
             }
           },
@@ -131,7 +146,10 @@ export default function ExpenseDetailScreen() {
         </Pressable>
         <Text style={styles.title}>Expense Details</Text>
         <View style={styles.headerActions}>
-          <Pressable onPress={() => setIsEditing(true)} style={styles.headerButton}>
+          <Pressable
+            onPress={() => setIsEditing(true)}
+            style={styles.headerButton}
+          >
             <Edit3 size={20} color={colors.text.primary} />
           </Pressable>
           <Pressable onPress={handleDelete} style={styles.headerButton}>
@@ -164,7 +182,10 @@ export default function ExpenseDetailScreen() {
               <View
                 style={[
                   styles.categoryDot,
-                  { backgroundColor: expense.categories?.color || colors.text.muted },
+                  {
+                    backgroundColor:
+                      expense.categories?.color || colors.text.muted,
+                  },
                 ]}
               />
               <Text style={styles.detailValue}>
@@ -216,7 +237,9 @@ export default function ExpenseDetailScreen() {
                     </Text>
                   </View>
                   <Text style={styles.lineCategory}>
-                    {line.categories?.name ?? expense.categories?.name ?? 'Uncategorized'}
+                    {line.categories?.name ??
+                      expense.categories?.name ??
+                      'Uncategorized'}
                   </Text>
                 </View>
               ))}

@@ -36,7 +36,9 @@ export function getOcrApiBaseUrl(): string {
 }
 
 /** Parse FastAPI-style error bodies so users see the real server message. */
-export async function readOcrHttpErrorMessage(response: Response): Promise<string> {
+export async function readOcrHttpErrorMessage(
+  response: Response
+): Promise<string> {
   const text = await response.text();
   try {
     const j = JSON.parse(text) as { detail?: unknown };
@@ -57,7 +59,9 @@ export async function readOcrHttpErrorMessage(response: Response): Promise<strin
   return text.trim() ? text.slice(0, 500) : `HTTP ${response.status}`;
 }
 
-export function mapOcrJsonToParsedReceipt(ocrResult: OCRResultJson): ParsedReceipt {
+export function mapOcrJsonToParsedReceipt(
+  ocrResult: OCRResultJson
+): ParsedReceipt {
   return {
     merchant: ocrResult.merchant ?? null,
     total: ocrResult.total ?? null,
@@ -65,12 +69,15 @@ export function mapOcrJsonToParsedReceipt(ocrResult: OCRResultJson): ParsedRecei
     currency: ocrResult.currency || 'USD',
     items: Array.isArray(ocrResult.items) ? ocrResult.items : [],
     rawText: ocrResult.raw_text || '',
-    confidence: typeof ocrResult.confidence === 'number' ? ocrResult.confidence : 0,
+    confidence:
+      typeof ocrResult.confidence === 'number' ? ocrResult.confidence : 0,
   };
 }
 
 /** Normalize OCR date strings to YYYY-MM-DD when possible. */
-export function normalizeExpenseDateFromOcr(raw: string | null | undefined): string | null {
+export function normalizeExpenseDateFromOcr(
+  raw: string | null | undefined
+): string | null {
   if (!raw?.trim()) return null;
   const s = raw.trim();
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
@@ -81,7 +88,9 @@ export function normalizeExpenseDateFromOcr(raw: string | null | undefined): str
   return s;
 }
 
-export async function prepareReceiptImageForOcr(localUri: string): Promise<string> {
+export async function prepareReceiptImageForOcr(
+  localUri: string
+): Promise<string> {
   const result = await ImageManipulator.manipulateAsync(
     localUri,
     [{ resize: { width: MAX_SIDE_PX } }],
@@ -93,7 +102,9 @@ export async function prepareReceiptImageForOcr(localUri: string): Promise<strin
 /**
  * Upload a local image URI to the OCR service and return parsed receipt fields.
  */
-export async function scanReceiptFromUri(imageUri: string): Promise<ParsedReceipt> {
+export async function scanReceiptFromUri(
+  imageUri: string
+): Promise<ParsedReceipt> {
   const base = getOcrApiBaseUrl();
   const formData = new FormData();
   formData.append('file', {

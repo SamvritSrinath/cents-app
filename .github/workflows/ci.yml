@@ -21,14 +21,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate CI pipeline doc
+        run: node scripts/generate-ci-docs.mjs
+
+      - name: Verify generated CI doc matches repo
+        run: git diff --exit-code docs/generated/ci-pipeline.md
+
+      - name: Check formatting (Prettier)
+        run: npm run format:check
+
       - name: Run linter
         run: npm run lint
 
       - name: Run TypeScript check
         run: npm run typecheck
 
-      - name: Run tests
-        run: npm test --passWithNoTests
+      - name: Run tests with coverage
+        run: npm run test:ci
+
+      - name: Expo doctor (informational)
+        run: npx expo-doctor
+        continue-on-error: true
 
   # EAS builds only on main to conserve build credits
   eas-build:

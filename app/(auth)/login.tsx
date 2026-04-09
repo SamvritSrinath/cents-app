@@ -6,7 +6,14 @@
  * Login screen with email/password authentication via Supabase.
  */
 
-import { View, Text, StyleSheet, TextInput, Pressable, Switch } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Switch,
+} from 'react-native';
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
@@ -157,7 +164,9 @@ export default function LoginScreen() {
                 }
               }}
               trackColor={{ false: colors.border, true: colors.accent.light }}
-              thumbColor={rememberEmail ? colors.accent.default : colors.text.muted}
+              thumbColor={
+                rememberEmail ? colors.accent.default : colors.text.muted
+              }
             />
           </View>
 

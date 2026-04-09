@@ -26,15 +26,17 @@ export function ExpenseCard({ expense, onPress }: ExpenseCardProps) {
 
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
       onPress={onPress}
       testID={`expense-card-${expense.id}`}
     >
       {/* Category Icon */}
-      <View style={[styles.iconContainer, { backgroundColor: `${categoryColor}20` }]}>
+      <View
+        style={[
+          styles.iconContainer,
+          { backgroundColor: `${categoryColor}20` },
+        ]}
+      >
         <Text style={styles.categoryEmoji}>{categoryIcon}</Text>
       </View>
 

@@ -62,7 +62,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           data: { session },
           error,
         } = await supabase.auth.getSession();
-        
+
         if (error) {
           console.warn('Session check failed:', error.message);
         } else {

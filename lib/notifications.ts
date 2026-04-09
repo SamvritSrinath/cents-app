@@ -140,7 +140,7 @@ export async function syncNotificationSchedulesAsync(
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Daily spending summary',
-        body: 'Open Cents to review today\'s expenses.',
+        body: "Open Cents to review today's expenses.",
         data: { type: DAILY_SUMMARY_TYPE },
       },
       trigger: {

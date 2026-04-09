@@ -6,7 +6,12 @@
  * React Query hooks for expense CRUD operations with Supabase.
  */
 
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { Expense, Category, ExpenseLineItem } from '../types/database';
 
@@ -50,7 +55,9 @@ export interface CreateExpenseData {
   line_items?: ExpenseLineItemInput[];
 }
 
-export interface UpdateExpenseData extends Partial<Omit<CreateExpenseData, 'line_items'>> {
+export interface UpdateExpenseData extends Partial<
+  Omit<CreateExpenseData, 'line_items'>
+> {
   id: string;
   /** When set, replaces all line items; `[]` clears splits. Omit to leave lines unchanged. */
   line_items?: ExpenseLineItemInput[];
@@ -63,8 +70,10 @@ export function useExpenses(filters?: ExpenseFilters) {
   return useInfiniteQuery({
     queryKey: [...EXPENSES_KEY, 'list', filters],
     queryFn: async ({ pageParam = 0 }): Promise<ExpenseWithCategory[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
@@ -74,7 +83,10 @@ export function useExpenses(filters?: ExpenseFilters) {
         .select(EXPENSE_SELECT_WITH_LINES)
         .eq('user_id', user.id)
         .order('expense_date', { ascending: false })
-        .order('position', { referencedTable: 'expense_line_items', ascending: true })
+        .order('position', {
+          referencedTable: 'expense_line_items',
+          ascending: true,
+        })
         .range(pageParam, pageParam + PAGE_SIZE - 1);
 
       // Apply filters
@@ -92,7 +104,9 @@ export function useExpenses(filters?: ExpenseFilters) {
 
         if (lineErr) throw lineErr;
 
-        const fromLines = [...new Set((lineRows || []).map((r) => r.expense_id))];
+        const fromLines = [
+          ...new Set((lineRows || []).map((r) => r.expense_id)),
+        ];
 
         if (fromLines.length > 0) {
           query = query.or(
@@ -103,7 +117,9 @@ export function useExpenses(filters?: ExpenseFilters) {
         }
       }
       if (filters?.searchQuery) {
-        query = query.or(`merchant.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
+        query = query.or(
+          `merchant.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
+        );
       }
 
       const { data, error } = await query;
@@ -136,7 +152,9 @@ export function useExpense(id: string | null) {
     queryFn: async (): Promise<ExpenseWithCategory | null> => {
       if (!id) return null;
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         throw new Error('Not authenticated');
@@ -184,7 +202,9 @@ async function replaceExpenseLineItems(
     category_id: li.category_id,
     position: i,
   }));
-  const { error: insErr } = await supabase.from('expense_line_items').insert(rows);
+  const { error: insErr } = await supabase
+    .from('expense_line_items')
+    .insert(rows);
   if (insErr) throw insErr;
 }
 
@@ -193,8 +213,10 @@ export function useCreateExpense() {
 
   return useMutation({
     mutationFn: async (expenseData: CreateExpenseData): Promise<Expense> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
@@ -239,8 +261,14 @@ export function useUpdateExpense() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, line_items, ...updates }: UpdateExpenseData): Promise<Expense> => {
-      const { data: { user } } = await supabase.auth.getUser();
+    mutationFn: async ({
+      id,
+      line_items,
+      ...updates
+    }: UpdateExpenseData): Promise<Expense> => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         throw new Error('Not authenticated');
@@ -278,7 +306,9 @@ export function useUpdateExpense() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: EXPENSES_KEY });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: [...EXPENSES_KEY, 'detail', variables.id] });
+      queryClient.invalidateQueries({
+        queryKey: [...EXPENSES_KEY, 'detail', variables.id],
+      });
     },
   });
 }
@@ -291,7 +321,9 @@ export function useDeleteExpense() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         throw new Error('Not authenticated');
@@ -319,8 +351,10 @@ export function useSpendingTotal(startDate: string, endDate: string) {
   return useQuery({
     queryKey: [...EXPENSES_KEY, 'total', startDate, endDate],
     queryFn: async (): Promise<number> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }

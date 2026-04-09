@@ -79,8 +79,16 @@ export function CategoryPieChart({
       {/* Legend */}
       <View style={styles.legend}>
         {data.slice(0, 5).map((item) => (
-          <View key={item.categoryId || 'uncategorized'} style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: item.categoryColor }]} />
+          <View
+            key={item.categoryId || 'uncategorized'}
+            style={styles.legendItem}
+          >
+            <View
+              style={[
+                styles.legendDot,
+                { backgroundColor: item.categoryColor },
+              ]}
+            />
             <Text style={styles.legendText} numberOfLines={1}>
               {item.categoryName}
             </Text>

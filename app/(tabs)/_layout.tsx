@@ -8,12 +8,7 @@
 
 import { Tabs, Redirect, Href } from 'expo-router';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import {
-  LayoutDashboard,
-  Receipt,
-  Tags,
-  Settings,
-} from 'lucide-react-native';
+import { LayoutDashboard, Receipt, Tags, Settings } from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { spacing } from '../../theme';
@@ -69,7 +64,9 @@ export default function TabsLayout() {
         name="expenses"
         options={{
           title: 'Expenses',
-          tabBarIcon: ({ color, size }) => <Receipt size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Receipt size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen

@@ -29,7 +29,10 @@ const FALLBACK_CATEGORY_ICONS: Record<string, string> = {
   uncategorized: '📦',
 };
 
-export function getCategoryIcon(name?: string | null, icon?: string | null): string {
+export function getCategoryIcon(
+  name?: string | null,
+  icon?: string | null
+): string {
   const trimmedIcon = icon?.trim();
   if (trimmedIcon) return trimmedIcon;
 

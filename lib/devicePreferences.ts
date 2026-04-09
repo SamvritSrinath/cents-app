@@ -76,10 +76,19 @@ export async function saveDevicePreferences(
   preferences: DevicePreferences
 ): Promise<void> {
   await AsyncStorage.multiSet([
-    [STORAGE_KEYS.notificationsEnabled, String(preferences.notificationsEnabled)],
-    [STORAGE_KEYS.receiptAlertsEnabled, String(preferences.receiptAlertsEnabled)],
+    [
+      STORAGE_KEYS.notificationsEnabled,
+      String(preferences.notificationsEnabled),
+    ],
+    [
+      STORAGE_KEYS.receiptAlertsEnabled,
+      String(preferences.receiptAlertsEnabled),
+    ],
     [STORAGE_KEYS.dailySummaryEnabled, String(preferences.dailySummaryEnabled)],
-    [STORAGE_KEYS.rememberEmailEnabled, String(preferences.rememberEmailEnabled)],
+    [
+      STORAGE_KEYS.rememberEmailEnabled,
+      String(preferences.rememberEmailEnabled),
+    ],
     [STORAGE_KEYS.defaultCurrency, preferences.defaultCurrency],
     [STORAGE_KEYS.themePreference, preferences.themePreference],
   ]);

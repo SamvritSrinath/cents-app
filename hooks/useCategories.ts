@@ -19,8 +19,10 @@ export function useCategories() {
   return useQuery({
     queryKey: CATEGORIES_KEY,
     queryFn: async (): Promise<Category[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
@@ -71,7 +73,9 @@ export function useCreateCategory() {
 
   return useMutation({
     mutationFn: async (data: CreateCategoryData): Promise<Category> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         throw new Error('Not authenticated');
@@ -104,7 +108,9 @@ export function useDeleteCategory() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         throw new Error('Not authenticated');

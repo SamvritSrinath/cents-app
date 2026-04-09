@@ -27,7 +27,10 @@ export function aggregateSpendingByCategory(
   uncategorizedLabel: string = DEFAULT_UNCAT,
   uncategorizedColor: string = DEFAULT_COLOR
 ): Map<string | null, { amount: number; name: string; color: string }> {
-  const categoryMap = new Map<string | null, { amount: number; name: string; color: string }>();
+  const categoryMap = new Map<
+    string | null,
+    { amount: number; name: string; color: string }
+  >();
 
   for (const expense of expenses) {
     const lines = expense.expense_line_items;
@@ -48,7 +51,8 @@ export function aggregateSpendingByCategory(
 
     for (const line of lines!) {
       const catId = line.category_id ?? expense.category_id;
-      const categoryData = line.category_id != null ? line.categories : expense.categories;
+      const categoryData =
+        line.category_id != null ? line.categories : expense.categories;
       const existing = categoryMap.get(catId) || {
         amount: 0,
         name: categoryData?.name || uncategorizedLabel,

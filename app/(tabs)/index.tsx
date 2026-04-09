@@ -7,14 +7,30 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { router, Href, useFocusEffect } from 'expo-router';
 import { TrendingUp, TrendingDown, ChevronRight } from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useProfile } from '../../hooks/useProfile';
-import { useDashboardStats, useSpendingByCategory, useSpendingTrend, useRecentExpenses } from '../../hooks/useDashboard';
+import {
+  useDashboardStats,
+  useSpendingByCategory,
+  useSpendingTrend,
+  useRecentExpenses,
+} from '../../hooks/useDashboard';
 import { SpendingTrendChart } from '../../components/charts/SpendingTrendChart';
 import { CategoryPieChart } from '../../components/charts/CategoryPieChart';
 import { ExpenseCard } from '../../components/ExpenseCard';
@@ -33,9 +49,14 @@ export default function DashboardScreen() {
   const { data: profile } = useProfile();
   const styles = createStyles(colors);
   const [defaultCurrency, setDefaultCurrency] = useState('USD');
-  
-  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useDashboardStats();
-  const { data: categoryData, refetch: refetchCategory } = useSpendingByCategory();
+
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    refetch: refetchStats,
+  } = useDashboardStats();
+  const { data: categoryData, refetch: refetchCategory } =
+    useSpendingByCategory();
   const { data: trendData, refetch: refetchTrend } = useSpendingTrend(6);
   const { data: recentExpenses, refetch: refetchRecent } = useRecentExpenses(5);
 
@@ -127,7 +148,12 @@ export default function DashboardScreen() {
                 <Text
                   style={[
                     styles.changeText,
-                    { color: monthlyChange <= 0 ? colors.semantic.success : colors.semantic.error },
+                    {
+                      color:
+                        monthlyChange <= 0
+                          ? colors.semantic.success
+                          : colors.semantic.error,
+                    },
                   ]}
                 >
                   {Math.abs(monthlyChange).toFixed(1)}% vs last month
@@ -164,19 +190,25 @@ export default function DashboardScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            <Pressable onPress={handleViewAllExpenses} style={styles.viewAllButton}>
+            <Pressable
+              onPress={handleViewAllExpenses}
+              style={styles.viewAllButton}
+            >
               <Text style={styles.viewAllText}>View All</Text>
               <ChevronRight size={16} color={colors.accent.default} />
             </Pressable>
           </View>
-          
+
           {!recentExpenses || recentExpenses.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>No transactions yet</Text>
               <Text style={styles.emptySubtext}>
                 Add your first expense to get started
               </Text>
-              <Pressable style={styles.primaryButton} onPress={handleAddExpense}>
+              <Pressable
+                style={styles.primaryButton}
+                onPress={handleAddExpense}
+              >
                 <Text style={styles.primaryButtonText}>Add Expense</Text>
               </Pressable>
             </View>
@@ -192,7 +224,9 @@ export default function DashboardScreen() {
         </View>
 
         {/* Bottom spacing — tab bar + home indicator */}
-        <View style={{ height: spacing.xxl + TAB_BAR_REGION + insets.bottom }} />
+        <View
+          style={{ height: spacing.xxl + TAB_BAR_REGION + insets.bottom }}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -200,114 +234,114 @@ export default function DashboardScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollView: {
-    flex: 1,
-    padding: spacing.md,
-  },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  greeting: {
-    ...typography.heading1,
-    color: colors.text.primary,
-  },
-  date: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-  },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  loadingCard: {
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-  },
-  cardLabel: {
-    ...typography.caption,
-    color: colors.text.secondary,
-  },
-  cardAmount: {
-    ...typography.heading1,
-    color: colors.text.primary,
-    marginTop: spacing.xs,
-    fontSize: 36,
-  },
-  changeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.sm,
-    gap: spacing.xs,
-  },
-  changeText: {
-    ...typography.caption,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    ...typography.heading3,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  viewAllText: {
-    ...typography.caption,
-    color: colors.accent.default,
-  },
-  chartCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  emptyState: {
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: spacing.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.text.secondary,
-  },
-  emptySubtext: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-  },
-  primaryButton: {
-    marginTop: spacing.md,
-    backgroundColor: colors.accent.default,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 10,
-  },
-  primaryButtonText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '600',
-  },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollView: {
+      flex: 1,
+      padding: spacing.md,
+    },
+    header: {
+      marginBottom: spacing.lg,
+    },
+    greeting: {
+      ...typography.heading1,
+      color: colors.text.primary,
+    },
+    date: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+    },
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      padding: spacing.lg,
+      marginBottom: spacing.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    loadingCard: {
+      paddingVertical: spacing.xl,
+      alignItems: 'center',
+    },
+    cardLabel: {
+      ...typography.caption,
+      color: colors.text.secondary,
+    },
+    cardAmount: {
+      ...typography.heading1,
+      color: colors.text.primary,
+      marginTop: spacing.xs,
+      fontSize: 36,
+    },
+    changeRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: spacing.sm,
+      gap: spacing.xs,
+    },
+    changeText: {
+      ...typography.caption,
+    },
+    section: {
+      marginBottom: spacing.lg,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.md,
+    },
+    sectionTitle: {
+      ...typography.heading3,
+      color: colors.text.primary,
+      marginBottom: spacing.md,
+    },
+    viewAllButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    viewAllText: {
+      ...typography.caption,
+      color: colors.accent.default,
+    },
+    chartCard: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      padding: spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    emptyState: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: spacing.lg,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    emptyText: {
+      ...typography.body,
+      color: colors.text.secondary,
+    },
+    emptySubtext: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+    },
+    primaryButton: {
+      marginTop: spacing.md,
+      backgroundColor: colors.accent.default,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.lg,
+      borderRadius: 10,
+    },
+    primaryButtonText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '600',
+    },
   });
 }

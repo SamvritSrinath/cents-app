@@ -18,7 +18,12 @@ export default function LandingScreen() {
   // Show loading while checking auth
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <ActivityIndicator size="large" color={colors.accent.default} />
       </View>
     );

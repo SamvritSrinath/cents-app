@@ -1,8 +1,23 @@
 import { Category } from '../types/database';
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  groceries: ['grocery', 'market', 'whole foods', 'trader joe', 'safeway', 'costco'],
-  food: ['restaurant', 'cafe', 'coffee', 'doordash', 'ubereats', 'chipotle', 'mcdonald'],
+  groceries: [
+    'grocery',
+    'market',
+    'whole foods',
+    'trader joe',
+    'safeway',
+    'costco',
+  ],
+  food: [
+    'restaurant',
+    'cafe',
+    'coffee',
+    'doordash',
+    'ubereats',
+    'chipotle',
+    'mcdonald',
+  ],
   transport: ['uber', 'lyft', 'gas', 'fuel', 'shell', 'chevron', 'transit'],
   shopping: ['amazon', 'target', 'walmart', 'best buy', 'store'],
   utilities: ['electric', 'water', 'internet', 'phone', 'utility'],

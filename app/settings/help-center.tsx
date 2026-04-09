@@ -48,11 +48,15 @@ export default function HelpCenterScreen() {
         <Text style={styles.title}>Help Center</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.heroCard}>
           <CircleHelp size={18} color={colors.accent.default} />
           <Text style={styles.heroText}>
-            Need help or want to cross-check behavior? These resources stay in sync with Cents.
+            Need help or want to cross-check behavior? These resources stay in
+            sync with Cents.
           </Text>
         </View>
 
@@ -85,100 +89,100 @@ export default function HelpCenterScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  backButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  title: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  content: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  heroCard: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  heroText: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    flex: 1,
-    lineHeight: 18,
-  },
-  sectionTitle: {
-    ...typography.caption,
-    color: colors.text.muted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    marginTop: spacing.sm,
-  },
-  linkCard: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  linkCopy: {
-    flex: 1,
-  },
-  linkTitle: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '600',
-  },
-  linkDescription: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-  },
-  faqCard: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  faqQuestion: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '600',
-  },
-  faqAnswer: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    lineHeight: 18,
-  },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    backButton: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    title: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    content: {
+      padding: spacing.md,
+      gap: spacing.md,
+    },
+    heroCard: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    heroText: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      flex: 1,
+      lineHeight: 18,
+    },
+    sectionTitle: {
+      ...typography.caption,
+      color: colors.text.muted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
+      marginTop: spacing.sm,
+    },
+    linkCard: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.sm,
+    },
+    linkCopy: {
+      flex: 1,
+    },
+    linkTitle: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '600',
+    },
+    linkDescription: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+    },
+    faqCard: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.md,
+      gap: spacing.xs,
+    },
+    faqQuestion: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '600',
+    },
+    faqAnswer: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      lineHeight: 18,
+    },
   });
 }

@@ -22,7 +22,15 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Calendar, Tag, Store, FileText, ScanLine, ListTree, ChevronRight } from 'lucide-react-native';
+import {
+  Calendar,
+  Tag,
+  Store,
+  FileText,
+  ScanLine,
+  ListTree,
+  ChevronRight,
+} from 'lucide-react-native';
 import { Category, ParsedReceipt } from '../types/database';
 import { CreateExpenseData } from '../hooks/useExpenses';
 import { CategoryPicker } from './CategoryPicker';
@@ -70,8 +78,12 @@ export function ExpenseForm({
 
   const [amount, setAmount] = useState(initialData?.amount?.toString() || '');
   const [merchant, setMerchant] = useState(initialData?.merchant || '');
-  const [description, setDescription] = useState(initialData?.description || '');
-  const [categoryId, setCategoryId] = useState<string | null>(initialData?.category_id || null);
+  const [description, setDescription] = useState(
+    initialData?.description || ''
+  );
+  const [categoryId, setCategoryId] = useState<string | null>(
+    initialData?.category_id || null
+  );
   const [receiptUrl, setReceiptUrl] = useState(initialData?.receipt_url || '');
   const [expenseDate, setExpenseDate] = useState(
     initialData?.expense_date || new Date().toISOString().split('T')[0]
@@ -83,12 +95,17 @@ export function ExpenseForm({
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
 
   const [receiptLines, setReceiptLines] = useState<ReceiptLine[]>(() =>
-    (initialData?.line_items ?? []).map((li) => ({ name: li.name, price: li.amount }))
+    (initialData?.line_items ?? []).map((li) => ({
+      name: li.name,
+      price: li.amount,
+    }))
   );
   const [lineCategories, setLineCategories] = useState<(string | null)[]>(() =>
     (initialData?.line_items ?? []).map((li) => li.category_id)
   );
-  const [splitByLine, setSplitByLine] = useState(() => (initialData?.line_items?.length ?? 0) > 0);
+  const [splitByLine, setSplitByLine] = useState(
+    () => (initialData?.line_items?.length ?? 0) > 0
+  );
   const [showSplitPanel, setShowSplitPanel] = useState(false);
 
   const selectedCategory = categories.find((c) => c.id === categoryId);
@@ -116,10 +133,13 @@ export function ExpenseForm({
       setExpenseDate(normalizedDate);
     }
     let lines: ReceiptLine[] = (data.items ?? [])
-      .filter((i) => i.name?.trim() || (typeof i.price === 'number' && i.price > 0))
+      .filter(
+        (i) => i.name?.trim() || (typeof i.price === 'number' && i.price > 0)
+      )
       .map((i) => ({
         name: (i.name || 'Item').trim() || 'Item',
-        price: typeof i.price === 'number' && !Number.isNaN(i.price) ? i.price : 0,
+        price:
+          typeof i.price === 'number' && !Number.isNaN(i.price) ? i.price : 0,
       }));
     if (lines.length === 0 && data.total != null && data.total > 0) {
       lines = [{ name: 'Receipt total', price: data.total }];
@@ -281,10 +301,13 @@ export function ExpenseForm({
               testID="amount-input"
             />
           </View>
-          {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+          {errors.amount && (
+            <Text style={styles.errorText}>{errors.amount}</Text>
+          )}
           {canSplit ? (
             <Text style={styles.afterAmountHint}>
-              Split by receipt line (next) assigns each line to a category for budgets.
+              Split by receipt line (next) assigns each line to a category for
+              budgets.
             </Text>
           ) : null}
         </View>
@@ -304,8 +327,13 @@ export function ExpenseForm({
               <Switch
                 value={splitByLine}
                 onValueChange={onToggleSplit}
-                trackColor={{ false: colors.border, true: `${colors.accent.default}80` }}
-                thumbColor={splitByLine ? colors.accent.default : colors.text.muted}
+                trackColor={{
+                  false: colors.border,
+                  true: `${colors.accent.default}80`,
+                }}
+                thumbColor={
+                  splitByLine ? colors.accent.default : colors.text.muted
+                }
                 accessibilityLabel="Split expense by receipt line items"
               />
             </View>
@@ -321,10 +349,13 @@ export function ExpenseForm({
                 <ChevronRight size={18} color={colors.accent.default} />
               </Pressable>
             ) : null}
-            {errors.split ? <Text style={styles.errorText}>{errors.split}</Text> : null}
+            {errors.split ? (
+              <Text style={styles.errorText}>{errors.split}</Text>
+            ) : null}
             {splitByLine && sumMismatch ? (
               <Text style={styles.warningText}>
-                Adjust amounts or lines so the itemized total matches the receipt total.
+                Adjust amounts or lines so the itemized total matches the
+                receipt total.
               </Text>
             ) : null}
           </View>
@@ -371,7 +402,8 @@ export function ExpenseForm({
             </Text>
           </Pressable>
           <Text style={styles.helperText}>
-            Default category for this trip. Used for the whole receipt unless you split by line.
+            Default category for this trip. Used for the whole receipt unless
+            you split by line.
           </Text>
         </View>
 
@@ -396,7 +428,11 @@ export function ExpenseForm({
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Notes</Text>
           <View style={[styles.inputWithIcon, styles.notesInput]}>
-            <FileText size={20} color={colors.text.muted} style={styles.notesIcon} />
+            <FileText
+              size={20}
+              color={colors.text.muted}
+              style={styles.notesIcon}
+            />
             <TextInput
               style={[styles.textInput, styles.notesTextInput]}
               value={description}
@@ -436,7 +472,12 @@ export function ExpenseForm({
       </ScrollView>
 
       {/* Action Buttons */}
-      <View style={[styles.actions, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
+      <View
+        style={[
+          styles.actions,
+          { paddingBottom: Math.max(insets.bottom, spacing.md) },
+        ]}
+      >
         <Pressable style={styles.cancelButton} onPress={onCancel}>
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </Pressable>
@@ -453,11 +494,13 @@ export function ExpenseForm({
 
       <CategoryPicker
         visible={showMainCategoryPicker || pickingLineIndex !== null}
-        title={pickingLineIndex !== null ? 'Line item category' : 'Select Category'}
+        title={
+          pickingLineIndex !== null ? 'Line item category' : 'Select Category'
+        }
         categories={categories}
         selectedId={
           pickingLineIndex !== null
-            ? lineCategories[pickingLineIndex] ?? null
+            ? (lineCategories[pickingLineIndex] ?? null)
             : categoryId
         }
         onSelect={(cat) => {
@@ -483,7 +526,10 @@ export function ExpenseForm({
         onRequestClose={() => setShowSplitPanel(false)}
       >
         <View style={styles.splitOverlay}>
-          <Pressable style={styles.splitBackdrop} onPress={() => setShowSplitPanel(false)} />
+          <Pressable
+            style={styles.splitBackdrop}
+            onPress={() => setShowSplitPanel(false)}
+          />
           <Animated.View
             style={[
               styles.splitPanel,
@@ -502,9 +548,13 @@ export function ExpenseForm({
               </Pressable>
             </View>
             <Text style={styles.splitPanelMeta}>
-              Total {formatCurrency(parsedAmount, currency)} · Lines {formatCurrency(lineSum, currency)}
+              Total {formatCurrency(parsedAmount, currency)} · Lines{' '}
+              {formatCurrency(lineSum, currency)}
             </Text>
-            <ScrollView style={styles.splitPanelList} keyboardShouldPersistTaps="handled">
+            <ScrollView
+              style={styles.splitPanelList}
+              keyboardShouldPersistTaps="handled"
+            >
               {receiptLines.map((line, index) => (
                 <View key={`${line.name}-${index}`} style={styles.splitLineRow}>
                   <View style={styles.splitLineMain}>
@@ -519,7 +569,10 @@ export function ExpenseForm({
                     style={styles.splitLineCategoryBtn}
                     onPress={() => setPickingLineIndex(index)}
                   >
-                    <Text style={styles.splitLineCategoryLabel} numberOfLines={1}>
+                    <Text
+                      style={styles.splitLineCategoryLabel}
+                      numberOfLines={1}
+                    >
                       {categoryLabelAt(lineCategories[index] ?? categoryId)}
                     </Text>
                     <ChevronRight size={16} color={colors.text.muted} />

@@ -6,7 +6,14 @@
  * Bottom sheet component for selecting expense categories.
  */
 
-import { View, Text, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  Modal,
+} from 'react-native';
 import { X, Check, Tag } from 'lucide-react-native';
 import { Category } from '../types/database';
 import { colors, typography, spacing } from '../theme';
@@ -57,7 +64,12 @@ export function CategoryPicker({
                 onClose();
               }}
             >
-              <View style={[styles.iconContainer, { backgroundColor: `${colors.text.muted}20` }]}>
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: `${colors.text.muted}20` },
+                ]}
+              >
                 <Tag size={18} color={colors.text.muted} />
               </View>
               <Text style={styles.itemText}>No Category</Text>
@@ -77,11 +89,20 @@ export function CategoryPicker({
                     onClose();
                   }}
                 >
-                  <View style={[styles.iconContainer, { backgroundColor: `${categoryColor}20` }]}>
-                    <Text style={styles.emoji}>{getCategoryIcon(category.name, category.icon)}</Text>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: `${categoryColor}20` },
+                    ]}
+                  >
+                    <Text style={styles.emoji}>
+                      {getCategoryIcon(category.name, category.icon)}
+                    </Text>
                   </View>
                   <Text style={styles.itemText}>{category.name}</Text>
-                  {isSelected && <Check size={20} color={colors.accent.default} />}
+                  {isSelected && (
+                    <Check size={20} color={colors.accent.default} />
+                  )}
                 </Pressable>
               );
             })}

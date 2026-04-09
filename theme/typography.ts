@@ -4,34 +4,34 @@ import { TextStyle } from 'react-native';
 
 export const typography: Record<string, TextStyle> = {
   heading1: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
-    lineHeight: 36,
+    lineHeight: 34,
   },
   heading2: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
-    lineHeight: 28,
+    lineHeight: 26,
   },
   heading3: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    lineHeight: 24,
+    lineHeight: 22,
   },
   body: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '400',
-    lineHeight: 24,
+    lineHeight: 22,
   },
   caption: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '400',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   small: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '400',
-    lineHeight: 16,
+    lineHeight: 15,
   },
 };
 

@@ -1,10 +1,10 @@
+import { getNotificationPlan } from './notifications';
+
 jest.mock('expo-notifications', () => ({
   setNotificationHandler: jest.fn(),
   AndroidImportance: { DEFAULT: 3 },
   SchedulableTriggerInputTypes: { DAILY: 'daily' },
 }));
-
-import { getNotificationPlan } from './notifications';
 
 describe('getNotificationPlan', () => {
   it('cancels all notifications when notifications are disabled', () => {

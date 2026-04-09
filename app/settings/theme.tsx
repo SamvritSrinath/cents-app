@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Check, ChevronLeft, Palette } from 'lucide-react-native';
-import {
-  ThemePreference,
-} from '../../lib/devicePreferences';
+import { ThemePreference } from '../../lib/devicePreferences';
 import { THEME_OPTIONS } from '../../lib/settingsOptions';
 import { spacing, typography } from '../../theme';
 import { AppColors } from '../../theme/colors';
@@ -58,9 +62,13 @@ export default function ThemeSettingsScreen() {
               >
                 <View style={styles.itemCopy}>
                   <Text style={styles.itemTitle}>{option.label}</Text>
-                  <Text style={styles.itemDescription}>{option.description}</Text>
+                  <Text style={styles.itemDescription}>
+                    {option.description}
+                  </Text>
                 </View>
-                {selected ? <Check size={18} color={colors.accent.default} /> : null}
+                {selected ? (
+                  <Check size={18} color={colors.accent.default} />
+                ) : null}
               </Pressable>
             );
           })}

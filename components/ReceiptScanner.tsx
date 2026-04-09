@@ -48,7 +48,8 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
       setResult(parsed);
       setStatus('success');
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to process receipt';
+      const message =
+        e instanceof Error ? e.message : 'Failed to process receipt';
       setError(message);
       setStatus('error');
     }
@@ -57,7 +58,10 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
   const pickWithCamera = useCallback(async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert('Permission needed', 'Camera access is required to scan a receipt.');
+      Alert.alert(
+        'Permission needed',
+        'Camera access is required to scan a receipt.'
+      );
       return;
     }
 
@@ -74,7 +78,10 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
   const pickFromLibrary = useCallback(async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert('Permission needed', 'Photo library access is required to choose a receipt.');
+      Alert.alert(
+        'Permission needed',
+        'Photo library access is required to choose a receipt.'
+      );
       return;
     }
 
@@ -139,9 +146,17 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
       {status === 'loading' && (
         <View style={styles.centerBlock}>
           {previewUri ? (
-            <Image source={{ uri: previewUri }} style={styles.preview} resizeMode="contain" />
+            <Image
+              source={{ uri: previewUri }}
+              style={styles.preview}
+              resizeMode="contain"
+            />
           ) : null}
-          <ActivityIndicator size="large" color={colors.accent.default} style={styles.spinner} />
+          <ActivityIndicator
+            size="large"
+            color={colors.accent.default}
+            style={styles.spinner}
+          />
           <Text style={styles.muted}>Reading receipt…</Text>
         </View>
       )}
@@ -149,7 +164,11 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
       {status === 'error' && error && (
         <View style={styles.centerBlock}>
           {previewUri ? (
-            <Image source={{ uri: previewUri }} style={styles.preview} resizeMode="contain" />
+            <Image
+              source={{ uri: previewUri }}
+              style={styles.preview}
+              resizeMode="contain"
+            />
           ) : null}
           <Text style={styles.errorText}>{error}</Text>
           <Pressable style={styles.secondaryBtn} onPress={handleReset}>
@@ -162,7 +181,11 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
       {status === 'success' && result && (
         <View style={styles.centerBlock}>
           {previewUri ? (
-            <Image source={{ uri: previewUri }} style={styles.preview} resizeMode="contain" />
+            <Image
+              source={{ uri: previewUri }}
+              style={styles.preview}
+              resizeMode="contain"
+            />
           ) : null}
           <View style={styles.summary}>
             {result.merchant ? (
@@ -187,7 +210,9 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
 
           {result.items && result.items.length > 0 ? (
             <View style={styles.itemsBlock}>
-              <Text style={styles.itemsHeading}>Line items ({result.items.length})</Text>
+              <Text style={styles.itemsHeading}>
+                Line items ({result.items.length})
+              </Text>
               <ScrollView
                 style={styles.itemsScroll}
                 nestedScrollEnabled
@@ -200,20 +225,24 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
                       {item.name?.trim() || 'Item'}
                     </Text>
                     <Text style={styles.itemPrice}>
-                      {result.currency} {typeof item.price === 'number' ? item.price.toFixed(2) : '—'}
+                      {result.currency}{' '}
+                      {typeof item.price === 'number'
+                        ? item.price.toFixed(2)
+                        : '—'}
                     </Text>
                   </View>
                 ))}
               </ScrollView>
               <Text style={styles.itemsHint}>
-                After Apply, use Split by receipt line below the amount to assign each line to a
-                category.
+                After Apply, use Split by receipt line below the amount to
+                assign each line to a category.
               </Text>
             </View>
           ) : result.total != null ? (
             <Text style={styles.itemsEmptyNote}>
-              No line items were detected. After Apply, you can still split using the receipt total
-              as one line, or edit the amount and categories on the form.
+              No line items were detected. After Apply, you can still split
+              using the receipt total as one line, or edit the amount and
+              categories on the form.
             </Text>
           ) : null}
 
@@ -230,7 +259,9 @@ export function ReceiptScanner({ onScan, onClose }: ReceiptScannerProps) {
       )}
 
       {status === 'idle' ? (
-        <Text style={styles.hint}>Uses your OCR service (EXPO_PUBLIC_OCR_API_URL).</Text>
+        <Text style={styles.hint}>
+          Uses your OCR service (EXPO_PUBLIC_OCR_API_URL).
+        </Text>
       ) : null}
     </View>
   );

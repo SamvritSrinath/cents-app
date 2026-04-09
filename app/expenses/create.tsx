@@ -15,10 +15,13 @@ import { useCategories } from '../../hooks/useCategories';
 import { colors, typography, spacing } from '../../theme';
 
 export default function CreateExpenseScreen() {
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
   const createExpense = useCreateExpense();
 
-  const handleSubmit = async (data: Parameters<typeof createExpense.mutate>[0]) => {
+  const handleSubmit = async (
+    data: Parameters<typeof createExpense.mutate>[0]
+  ) => {
     try {
       await createExpense.mutateAsync(data);
       router.back();

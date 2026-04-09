@@ -20,7 +20,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Tag, Trash2, Sparkles, Layers3 } from 'lucide-react-native';
-import { useCategories, useCreateCategory, useDeleteCategory } from '../../hooks/useCategories';
+import {
+  useCategories,
+  useCreateCategory,
+  useDeleteCategory,
+} from '../../hooks/useCategories';
 import { useSpendingByCategory } from '../../hooks/useDashboard';
 import { Category } from '../../types/database';
 import { typography, spacing } from '../../theme';
@@ -40,9 +44,36 @@ const COLOR_CHOICES = [
 ];
 
 const EMOJI_CHOICES = [
-  '🛒', '🍔', '☕', '🚗', '🏠', '💊', '🎬', '✈️', '📱', '👕',
-  '🎁', '📚', '🏋️', '💇', '🐕', '👶', '💰', '📦', '🔧', '⚡',
-  '💼', '🎵', '🎮', '🌐', '🏥', '🎓', '🛍️', '🍕', '🍺', '🧾',
+  '🛒',
+  '🍔',
+  '☕',
+  '🚗',
+  '🏠',
+  '💊',
+  '🎬',
+  '✈️',
+  '📱',
+  '👕',
+  '🎁',
+  '📚',
+  '🏋️',
+  '💇',
+  '🐕',
+  '👶',
+  '💰',
+  '📦',
+  '🔧',
+  '⚡',
+  '💼',
+  '🎵',
+  '🎮',
+  '🌐',
+  '🏥',
+  '🎓',
+  '🛍️',
+  '🍕',
+  '🍺',
+  '🧾',
 ];
 
 export default function CategoriesScreen() {
@@ -92,23 +123,27 @@ export default function CategoriesScreen() {
   };
 
   const handleDeleteCategory = (id: string, name: string) => {
-    Alert.alert('Delete category?', `Remove ${name} from your custom categories?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteCategory.mutateAsync(id);
-          } catch (error) {
-            Alert.alert(
-              'Could not delete category',
-              error instanceof Error ? error.message : 'Please try again.'
-            );
-          }
+    Alert.alert(
+      'Delete category?',
+      `Remove ${name} from your custom categories?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteCategory.mutateAsync(id);
+            } catch (error) {
+              Alert.alert(
+                'Could not delete category',
+                error instanceof Error ? error.message : 'Please try again.'
+              );
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   return (
@@ -135,9 +170,12 @@ export default function CategoriesScreen() {
             <Sparkles size={24} color={colors.accent.default} />
           </View>
           <View style={styles.heroCopy}>
-            <Text style={styles.heroTitle}>Receipt categories stay user-confirmed</Text>
+            <Text style={styles.heroTitle}>
+              Receipt categories stay user-confirmed
+            </Text>
             <Text style={styles.heroText}>
-              Auto-suggestions can help, but the category you pick is what gets saved.
+              Auto-suggestions can help, but the category you pick is what gets
+              saved.
             </Text>
           </View>
         </View>
@@ -204,19 +242,27 @@ export default function CategoriesScreen() {
               </Text>
             ) : (
               spendingByCategory.map((item) => (
-                <View key={item.categoryId || item.categoryName} style={styles.spendingRow}>
+                <View
+                  key={item.categoryId || item.categoryName}
+                  style={styles.spendingRow}
+                >
                   <View style={styles.spendingLabelRow}>
                     <View
                       style={[
                         styles.spendingDot,
-                        { backgroundColor: item.categoryColor || colors.text.muted },
+                        {
+                          backgroundColor:
+                            item.categoryColor || colors.text.muted,
+                        },
                       ]}
                     />
                     <Text style={styles.spendingLabel} numberOfLines={1}>
                       {item.categoryName}
                     </Text>
                   </View>
-                  <Text style={styles.spendingValue}>{item.percentage.toFixed(0)}%</Text>
+                  <Text style={styles.spendingValue}>
+                    {item.percentage.toFixed(0)}%
+                  </Text>
                 </View>
               ))
             )}
@@ -230,7 +276,8 @@ export default function CategoriesScreen() {
           <View style={styles.summaryCard}>
             <Layers3 size={24} color={colors.text.muted} />
             <Text style={styles.emptySummaryText}>
-              Budgets will build on these categories, so the structure stays consistent.
+              Budgets will build on these categories, so the structure stays
+              consistent.
             </Text>
           </View>
         </View>
@@ -299,7 +346,10 @@ export default function CategoriesScreen() {
                     return (
                       <Pressable
                         key={emoji}
-                        style={[styles.emojiChoice, selected && styles.emojiChoiceSelected]}
+                        style={[
+                          styles.emojiChoice,
+                          selected && styles.emojiChoiceSelected,
+                        ]}
                         onPress={() => setSelectedEmoji(emoji)}
                       >
                         <Text style={styles.emojiChoiceText}>{emoji}</Text>
@@ -360,7 +410,9 @@ function CategoryGroup({
         </View>
         <Tag
           size={18}
-          color={accent === 'default' ? colors.accent.default : colors.text.muted}
+          color={
+            accent === 'default' ? colors.accent.default : colors.text.muted
+          }
         />
       </View>
 
@@ -403,342 +455,342 @@ function CategoryGroup({
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    alignItems: 'flex-start',
-  },
-  title: {
-    ...typography.heading1,
-    color: colors.text.primary,
-  },
-  subtitle: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-    maxWidth: 260,
-  },
-  createButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: 999,
-    backgroundColor: colors.accent.default,
-  },
-  createButtonText: {
-    ...typography.caption,
-    color: colors.background,
-    fontWeight: '700',
-  },
-  heroCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    margin: spacing.md,
-    padding: spacing.md,
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  heroIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#10b9811a',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroCopy: {
-    flex: 1,
-  },
-  heroTitle: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  heroText: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
-    lineHeight: 18,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-  },
-  statValue: {
-    ...typography.heading2,
-    color: colors.text.primary,
-  },
-  statLabel: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-  },
-  section: {
-    padding: spacing.md,
-    paddingBottom: 0,
-  },
-  sectionHeader: {
-    marginBottom: spacing.sm,
-  },
-  sectionTitle: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  loadingCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    alignItems: 'center',
-  },
-  groupCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-  },
-  groupHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.md,
-  },
-  groupTitle: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '700',
-  },
-  groupSubtitle: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-    maxWidth: 260,
-  },
-  emptyGroupText: {
-    ...typography.caption,
-    color: colors.text.muted,
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  categoryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: 999,
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.border,
-    maxWidth: '100%',
-  },
-  categoryPillDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  categoryPillText: {
-    ...typography.caption,
-    color: colors.text.primary,
-    fontWeight: '600',
-    maxWidth: 140,
-  },
-  categoryPillEmoji: {
-    fontSize: 16,
-  },
-  sectionSpacer: {
-    height: spacing.md,
-  },
-  summaryCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  emptySummaryText: {
-    ...typography.caption,
-    color: colors.text.muted,
-    lineHeight: 18,
-  },
-  spendingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  spendingLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
-    paddingRight: spacing.md,
-  },
-  spendingDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  spendingLabel: {
-    ...typography.body,
-    color: colors.text.primary,
-    flex: 1,
-  },
-  spendingValue: {
-    ...typography.caption,
-    color: colors.text.muted,
-    fontWeight: '700',
-  },
-  bottomSpacer: {
-    height: spacing.xxl,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    padding: spacing.md,
-  },
-  modalCard: {
-    backgroundColor: colors.background,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-  },
-  modalTitle: {
-    ...typography.heading2,
-    color: colors.text.primary,
-  },
-  modalSubtitle: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-    marginBottom: spacing.md,
-    lineHeight: 18,
-  },
-  modalInput: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  colorLabel: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  colorGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  emojiRow: {
-    gap: spacing.sm,
-  },
-  emojiInput: {
-    backgroundColor: colors.card,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.sm,
-    ...typography.body,
-    color: colors.text.primary,
-    width: 56,
-    textAlign: 'center',
-    fontSize: 22,
-  },
-  emojiChoices: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  emojiChoice: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emojiChoiceSelected: {
-    borderColor: colors.accent.default,
-  },
-  emojiChoiceText: {
-    fontSize: 18,
-  },
-  colorSwatch: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  colorSwatchSelected: {
-    borderColor: colors.text.primary,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-  },
-  modalButton: {
-    flex: 1,
-    borderRadius: 14,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-  },
-  modalButtonSecondary: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  modalButtonPrimary: {
-    backgroundColor: colors.accent.default,
-  },
-  modalButtonSecondaryText: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '700',
-  },
-  modalButtonPrimaryText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '700',
-  },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      gap: spacing.md,
+      alignItems: 'flex-start',
+    },
+    title: {
+      ...typography.heading1,
+      color: colors.text.primary,
+    },
+    subtitle: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+      maxWidth: 260,
+    },
+    createButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: 999,
+      backgroundColor: colors.accent.default,
+    },
+    createButtonText: {
+      ...typography.caption,
+      color: colors.background,
+      fontWeight: '700',
+    },
+    heroCard: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      margin: spacing.md,
+      padding: spacing.md,
+      flexDirection: 'row',
+      gap: spacing.md,
+    },
+    heroIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      backgroundColor: '#10b9811a',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    heroCopy: {
+      flex: 1,
+    },
+    heroTitle: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    heroText: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      marginTop: spacing.xs,
+      lineHeight: 18,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      paddingHorizontal: spacing.md,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.card,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.md,
+    },
+    statValue: {
+      ...typography.heading2,
+      color: colors.text.primary,
+    },
+    statLabel: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+    },
+    section: {
+      padding: spacing.md,
+      paddingBottom: 0,
+    },
+    sectionHeader: {
+      marginBottom: spacing.sm,
+    },
+    sectionTitle: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    loadingCard: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.lg,
+      alignItems: 'center',
+    },
+    groupCard: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.md,
+    },
+    groupHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: spacing.md,
+    },
+    groupTitle: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '700',
+    },
+    groupSubtitle: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+      maxWidth: 260,
+    },
+    emptyGroupText: {
+      ...typography.caption,
+      color: colors.text.muted,
+    },
+    categoryGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    categoryPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: 999,
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+      maxWidth: '100%',
+    },
+    categoryPillDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+    },
+    categoryPillText: {
+      ...typography.caption,
+      color: colors.text.primary,
+      fontWeight: '600',
+      maxWidth: 140,
+    },
+    categoryPillEmoji: {
+      fontSize: 16,
+    },
+    sectionSpacer: {
+      height: spacing.md,
+    },
+    summaryCard: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.md,
+      gap: spacing.sm,
+    },
+    emptySummaryText: {
+      ...typography.caption,
+      color: colors.text.muted,
+      lineHeight: 18,
+    },
+    spendingRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    spendingLabelRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      flex: 1,
+      paddingRight: spacing.md,
+    },
+    spendingDot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+    },
+    spendingLabel: {
+      ...typography.body,
+      color: colors.text.primary,
+      flex: 1,
+    },
+    spendingValue: {
+      ...typography.caption,
+      color: colors.text.muted,
+      fontWeight: '700',
+    },
+    bottomSpacer: {
+      height: spacing.xxl,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.6)',
+      justifyContent: 'center',
+      padding: spacing.md,
+    },
+    modalCard: {
+      backgroundColor: colors.background,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.lg,
+    },
+    modalTitle: {
+      ...typography.heading2,
+      color: colors.text.primary,
+    },
+    modalSubtitle: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+      marginBottom: spacing.md,
+      lineHeight: 18,
+    },
+    modalInput: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 14,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+      ...typography.body,
+      color: colors.text.primary,
+    },
+    colorLabel: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.md,
+      marginBottom: spacing.sm,
+    },
+    colorGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    emojiRow: {
+      gap: spacing.sm,
+    },
+    emojiInput: {
+      backgroundColor: colors.card,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.sm,
+      ...typography.body,
+      color: colors.text.primary,
+      width: 56,
+      textAlign: 'center',
+      fontSize: 22,
+    },
+    emojiChoices: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      paddingVertical: spacing.xs,
+    },
+    emojiChoice: {
+      width: 38,
+      height: 38,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emojiChoiceSelected: {
+      borderColor: colors.accent.default,
+    },
+    emojiChoiceText: {
+      fontSize: 18,
+    },
+    colorSwatch: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+    colorSwatchSelected: {
+      borderColor: colors.text.primary,
+    },
+    modalActions: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginTop: spacing.lg,
+    },
+    modalButton: {
+      flex: 1,
+      borderRadius: 14,
+      paddingVertical: spacing.md,
+      alignItems: 'center',
+    },
+    modalButtonSecondary: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    modalButtonPrimary: {
+      backgroundColor: colors.accent.default,
+    },
+    modalButtonSecondaryText: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '700',
+    },
+    modalButtonPrimaryText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '700',
+    },
   });
 }

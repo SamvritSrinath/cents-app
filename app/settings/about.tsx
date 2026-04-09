@@ -22,7 +22,10 @@ export default function AboutScreen() {
         <Text style={styles.title}>About Cents</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.brandCard}>
           <View style={styles.brandIcon}>
             <Wallet size={24} color={colors.accent.default} />
@@ -46,7 +49,8 @@ export default function AboutScreen() {
         <View style={styles.infoCard}>
           <Text style={styles.infoLabel}>Data</Text>
           <Text style={styles.infoValue}>
-            Auth and data are managed with Supabase and per-user access controls.
+            Auth and data are managed with Supabase and per-user access
+            controls.
           </Text>
         </View>
       </ScrollView>
@@ -56,80 +60,80 @@ export default function AboutScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  backButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  title: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  content: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  brandCard: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  brandIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: `${colors.accent.default}20`,
-  },
-  brandTitle: {
-    ...typography.heading2,
-    color: colors.text.primary,
-  },
-  brandSubtitle: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  infoCard: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  infoLabel: {
-    ...typography.caption,
-    color: colors.text.muted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-  },
-  infoValue: {
-    ...typography.body,
-    color: colors.text.primary,
-  },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    backButton: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    title: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    content: {
+      padding: spacing.md,
+      gap: spacing.md,
+    },
+    brandCard: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    brandIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: `${colors.accent.default}20`,
+    },
+    brandTitle: {
+      ...typography.heading2,
+      color: colors.text.primary,
+    },
+    brandSubtitle: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      textAlign: 'center',
+      lineHeight: 18,
+    },
+    infoCard: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.md,
+      gap: spacing.xs,
+    },
+    infoLabel: {
+      ...typography.caption,
+      color: colors.text.muted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
+    },
+    infoValue: {
+      ...typography.body,
+      color: colors.text.primary,
+    },
   });
 }

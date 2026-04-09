@@ -8,7 +8,10 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { aggregateSpendingByCategory, ExpenseForCategoryAggregation } from '../lib/categoryAggregation';
+import {
+  aggregateSpendingByCategory,
+  ExpenseForCategoryAggregation,
+} from '../lib/categoryAggregation';
 import { EXPENSE_SELECT_WITH_LINES, ExpenseWithCategory } from './useExpenses';
 
 const DASHBOARD_KEY = ['dashboard'];
@@ -41,7 +44,7 @@ function getMonthRange(monthsAgo: number = 0) {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth() - monthsAgo, 1);
   const end = new Date(now.getFullYear(), now.getMonth() - monthsAgo + 1, 0);
-  
+
   return {
     start: start.toISOString().split('T')[0],
     end: end.toISOString().split('T')[0],
@@ -55,8 +58,10 @@ export function useDashboardStats() {
   return useQuery({
     queryKey: [...DASHBOARD_KEY, 'stats'],
     queryFn: async (): Promise<DashboardStats> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
@@ -92,12 +97,17 @@ export function useDashboardStats() {
 
       if (countError) throw countError;
 
-      const thisMonth = (thisMonthData || []).reduce((sum, e) => sum + e.amount, 0);
-      const lastMonth = (lastMonthData || []).reduce((sum, e) => sum + e.amount, 0);
-      
-      const changePercent = lastMonth === 0 
-        ? 0 
-        : ((thisMonth - lastMonth) / lastMonth) * 100;
+      const thisMonth = (thisMonthData || []).reduce(
+        (sum, e) => sum + e.amount,
+        0
+      );
+      const lastMonth = (lastMonthData || []).reduce(
+        (sum, e) => sum + e.amount,
+        0
+      );
+
+      const changePercent =
+        lastMonth === 0 ? 0 : ((thisMonth - lastMonth) / lastMonth) * 100;
 
       return {
         thisMonth,
@@ -117,8 +127,10 @@ export function useSpendingByCategory() {
   return useQuery({
     queryKey: [...DASHBOARD_KEY, 'byCategory'],
     queryFn: async (): Promise<CategorySpending[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
@@ -133,7 +145,10 @@ export function useSpendingByCategory() {
         .eq('user_id', user.id)
         .gte('expense_date', thisMonthRange.start)
         .lte('expense_date', thisMonthRange.end)
-        .order('position', { referencedTable: 'expense_line_items', ascending: true });
+        .order('position', {
+          referencedTable: 'expense_line_items',
+          ascending: true,
+        });
 
       if (error) throw error;
 
@@ -148,7 +163,10 @@ export function useSpendingByCategory() {
         (data || []) as unknown as ExpenseForCategoryAggregation[]
       );
 
-      const total = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.amount, 0);
+      const total = Array.from(categoryMap.values()).reduce(
+        (sum, c) => sum + c.amount,
+        0
+      );
 
       return Array.from(categoryMap.entries()).map(([categoryId, data]) => ({
         categoryId,
@@ -169,14 +187,29 @@ export function useSpendingTrend(months: number = 6) {
   return useQuery({
     queryKey: [...DASHBOARD_KEY, 'trend', months],
     queryFn: async (): Promise<MonthlySpending[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
 
       const results: MonthlySpending[] = [];
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthNames = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
 
       // Fetch data for each month
       for (let i = months - 1; i >= 0; i--) {
@@ -194,7 +227,7 @@ export function useSpendingTrend(months: number = 6) {
         if (error) throw error;
 
         const total = (data || []).reduce((sum, e) => sum + e.amount, 0);
-        
+
         results.push({
           month: range.start,
           label: monthNames[date.getMonth()],
@@ -215,8 +248,10 @@ export function useRecentExpenses(limit: number = 5) {
   return useQuery({
     queryKey: [...DASHBOARD_KEY, 'recent', limit],
     queryFn: async (): Promise<ExpenseWithCategory[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         throw new Error('Not authenticated');
       }
@@ -226,7 +261,10 @@ export function useRecentExpenses(limit: number = 5) {
         .select(EXPENSE_SELECT_WITH_LINES)
         .eq('user_id', user.id)
         .order('expense_date', { ascending: false })
-        .order('position', { referencedTable: 'expense_line_items', ascending: true })
+        .order('position', {
+          referencedTable: 'expense_line_items',
+          ascending: true,
+        })
         .limit(limit);
 
       if (error) throw error;

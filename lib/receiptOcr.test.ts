@@ -41,10 +41,15 @@ describe('mapOcrJsonToParsedReceipt', () => {
 
 describe('readOcrHttpErrorMessage', () => {
   it('extracts string detail from FastAPI JSON', async () => {
-    const res = new Response(JSON.stringify({ detail: 'OCR processing failed: test' }), {
-      status: 500,
-    });
-    await expect(readOcrHttpErrorMessage(res)).resolves.toBe('OCR processing failed: test');
+    const res = new Response(
+      JSON.stringify({ detail: 'OCR processing failed: test' }),
+      {
+        status: 500,
+      }
+    );
+    await expect(readOcrHttpErrorMessage(res)).resolves.toBe(
+      'OCR processing failed: test'
+    );
   });
 
   it('falls back to raw body', async () => {

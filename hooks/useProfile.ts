@@ -109,9 +109,14 @@ export function useProfile() {
       // Some environments have profile schema drift (e.g., missing `email` column
       // or constraints that reject upsert payloads). Keep name updates working by
       // treating profiles as best-effort after auth metadata succeeds.
-      console.warn('Could not upsert profile row; falling back to metadata-only name sync:', error.message);
+      console.warn(
+        'Could not upsert profile row; falling back to metadata-only name sync:',
+        error.message
+      );
 
-      const cachedProfile = queryClient.getQueryData<Profile | null>(['profile']);
+      const cachedProfile = queryClient.getQueryData<Profile | null>([
+        'profile',
+      ]);
       return {
         id: user.id,
         email: cachedProfile?.email ?? null,
@@ -121,8 +126,7 @@ export function useProfile() {
         display_name:
           (typeof updates.display_name === 'string'
             ? updates.display_name
-            : cachedProfile?.display_name) ||
-          null,
+            : cachedProfile?.display_name) || null,
       } as Profile;
     },
     onSuccess: (updatedProfile) => {

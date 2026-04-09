@@ -83,7 +83,9 @@ export interface Database {
       expense_line_items: {
         Row: ExpenseLineItem;
         Insert: Omit<ExpenseLineItem, 'id' | 'created_at'>;
-        Update: Partial<Omit<ExpenseLineItem, 'id' | 'expense_id' | 'created_at'>>;
+        Update: Partial<
+          Omit<ExpenseLineItem, 'id' | 'expense_id' | 'created_at'>
+        >;
       };
       profiles: {
         Row: Profile;

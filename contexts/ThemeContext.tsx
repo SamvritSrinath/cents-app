@@ -7,7 +7,11 @@ import React, {
   useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
-import { loadDevicePreferences, saveDevicePreferences, ThemePreference } from '../lib/devicePreferences';
+import {
+  loadDevicePreferences,
+  saveDevicePreferences,
+  ThemePreference,
+} from '../lib/devicePreferences';
 import { AppColors, getColorsForTheme, ResolvedTheme } from '../theme/colors';
 
 interface ThemeContextValue {
@@ -42,14 +46,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return preference;
   }, [preference, systemScheme]);
 
-  const setThemePreference = useCallback(async (nextPreference: ThemePreference) => {
-    const existing = await loadDevicePreferences();
-    await saveDevicePreferences({
-      ...existing,
-      themePreference: nextPreference,
-    });
-    setPreference(nextPreference);
-  }, []);
+  const setThemePreference = useCallback(
+    async (nextPreference: ThemePreference) => {
+      const existing = await loadDevicePreferences();
+      await saveDevicePreferences({
+        ...existing,
+        themePreference: nextPreference,
+      });
+      setPreference(nextPreference);
+    },
+    []
+  );
 
   const value = useMemo<ThemeContextValue>(
     () => ({
@@ -62,7 +69,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     [preference, resolvedTheme, loading, setThemePreference]
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme(): ThemeContextValue {
