@@ -12,8 +12,10 @@ import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { BuildConfigMissingScreen } from '../components/BuildConfigMissingScreen';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+import { isMissingSupabasePublicEnv } from '../lib/buildConfig';
 import { loadDevicePreferences } from '../lib/devicePreferences';
 import { syncNotificationSchedulesAsync } from '../lib/notifications';
 
@@ -70,6 +72,15 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
+  if (!__DEV__ && isMissingSupabasePublicEnv()) {
+    return (
+      <SafeAreaProvider>
+        <BuildConfigMissingScreen />
+        <StatusBar style="light" />
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
