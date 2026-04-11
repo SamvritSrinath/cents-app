@@ -30,6 +30,13 @@ Scan the QR code in Expo Go. If LAN fails, try:
 npx expo start --tunnel
 ```
 
+## Profile photos (Storage)
+
+The app uploads avatars to the public Supabase Storage bucket **`avatars`** at paths `{user_id}/avatar.{ext}` and saves the public URL on `profiles.avatar_url`.
+
+1. Create the bucket and policies (SQL Editor or Dashboard). A reference migration lives at [`supabase/migrations/20260410_avatars_storage_bucket.sql`](../supabase/migrations/20260410_avatars_storage_bucket.sql).
+2. Ensure authenticated users can **upload** only under their own `user_id` folder and that **read** is allowed for public URLs (see [docs/04-backend-audit.md](04-backend-audit.md)).
+
 ## Scripts
 - `npm run start` - Start Expo
 - `npm run android` - Start Expo with Android focus

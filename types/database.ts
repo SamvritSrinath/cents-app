@@ -28,8 +28,24 @@ export interface Budget {
   user_id: string;
   category_id: string;
   amount: number;
-  period: 'monthly' | 'weekly';
+  period: 'monthly' | 'weekly' | 'yearly';
   start_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Row from Supabase RPC get_budget_progress */
+export interface BudgetProgressRow {
+  budget_id: string;
+  category_id: string;
+  category_name: string;
+  category_icon: string;
+  category_color: string;
+  budget_amount: number;
+  spent_amount: number;
+  remaining_amount: number;
+  percentage_used: number;
+  period: string;
 }
 
 export interface ExpenseLineItem {
@@ -77,8 +93,8 @@ export interface Database {
       };
       budgets: {
         Row: Budget;
-        Insert: Omit<Budget, 'id'>;
-        Update: Partial<Omit<Budget, 'id'>>;
+        Insert: Omit<Budget, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Budget, 'id' | 'created_at' | 'updated_at'>>;
       };
       expense_line_items: {
         Row: ExpenseLineItem;

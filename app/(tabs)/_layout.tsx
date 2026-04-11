@@ -72,7 +72,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="budgets"
         options={{
-          title: 'Categories',
+          title: 'Budgets',
           tabBarIcon: ({ color, size }) => <Tags size={size} color={color} />,
         }}
       />

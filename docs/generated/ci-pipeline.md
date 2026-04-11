@@ -49,31 +49,43 @@ node scripts/generate-ci-docs.mjs
 git diff --exit-code docs/generated/ci-pipeline.md
 ```
 
-### 6. Check formatting (Prettier)
+### 6. Generate API docs (TypeDoc)
+
+```text
+npm run docs:api
+```
+
+### 7. Verify API docs match repo
+
+```text
+git diff --exit-code docs/generated/api-md
+```
+
+### 8. Check formatting (Prettier)
 
 ```text
 npm run format:check
 ```
 
-### 7. Run linter
+### 9. Run linter
 
 ```text
 npm run lint
 ```
 
-### 8. Run TypeScript check
+### 10. Run TypeScript check
 
 ```text
 npm run typecheck
 ```
 
-### 9. Run tests with coverage
+### 11. Run tests with coverage
 
 ```text
 npm run test:ci
 ```
 
-### 10. Expo doctor (informational)
+### 12. Expo doctor
 
 ```text
 npx expo-doctor

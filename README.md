@@ -1,8 +1,18 @@
-# Cents Mobile App
+<div align="center">
 
-**Version:** 0.5.0 (see `package.json` and `app.json` → `expo.version`; release tag `v0.5.0`).
+# Cents
+
+**Mobile · Expo SDK 54 · Supabase**
+
+</div>
+
+**Version:** 0.6.0 (see `package.json` and `app.json` → `expo.version`; tag releases accordingly).
 
 Android-first Expo app for secure, fast expense tracking connected to Supabase.
+
+**Multi-root workspace:** open [`cents.code-workspace`](cents.code-workspace) in your editor to work alongside the **Expensely** web app in a sibling folder.
+
+**App icon:** custom mark produced for this project (not a third-party asset pack).
 
 ## Principles
 
@@ -36,6 +46,7 @@ Setup details: [docs/02-setup.md](docs/02-setup.md)
 - [docs/03-architecture.md](docs/03-architecture.md)
 - [docs/04-backend-audit.md](docs/04-backend-audit.md)
 - [docs/05-ci.md](docs/05-ci.md) — CI overview; generated step list: [docs/generated/ci-pipeline.md](docs/generated/ci-pipeline.md)
+- [docs/generated/api-md](docs/generated/api-md) — generated module reference (`lib/`, `hooks/`, `types/database`)
 - [docs/06-release.md](docs/06-release.md) — versioning, tags, EAS
 - [docs/07-ocr-service.md](docs/07-ocr-service.md)
 - [docs/09-performance.md](docs/09-performance.md)
@@ -54,6 +65,8 @@ EXPO_PUBLIC_SUPABASE_URL=your-url
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-key
 ```
 
+**Saved sign-in (Settings):** when enabled, the app stores only your **email** on this device (SecureStore) to pre-fill the login form. Passwords and session tokens are not stored there.
+
 ## Scripts
 
 - `npm run start` — Expo dev server
@@ -63,6 +76,8 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-key
 - `npm run test:ci` — Jest with coverage (matches CI)
 - `npm run format` / `npm run format:check` — Prettier
 - `npm run generate-ci-docs` — Regenerate [docs/generated/ci-pipeline.md](docs/generated/ci-pipeline.md)
+- `npm run docs:api` — Regenerate TypeDoc Markdown under [docs/generated/api-md](docs/generated/api-md)
+- `npm run verify-api-docs` — Fail if API docs are out of date (same check as CI)
 
 ## Receipt categorization
 

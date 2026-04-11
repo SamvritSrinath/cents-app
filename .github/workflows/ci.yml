@@ -27,6 +27,12 @@ jobs:
       - name: Verify generated CI doc matches repo
         run: git diff --exit-code docs/generated/ci-pipeline.md
 
+      - name: Generate API docs (TypeDoc)
+        run: npm run docs:api
+
+      - name: Verify API docs match repo
+        run: git diff --exit-code docs/generated/api-md
+
       - name: Check formatting (Prettier)
         run: npm run format:check
 
@@ -39,9 +45,8 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:ci
 
-      - name: Expo doctor (informational)
+      - name: Expo doctor
         run: npx expo-doctor
-        continue-on-error: true
 
   # EAS builds only on main to conserve build credits
   eas-build:

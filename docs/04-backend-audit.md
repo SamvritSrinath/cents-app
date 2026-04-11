@@ -40,6 +40,12 @@ This app assumes a Supabase backend with RLS (row-level security) and least-priv
 - Use signed URLs for receipt access.
 - Restrict upload paths to the authenticated user.
 
+## Storage (Avatars — profile photos)
+- Public bucket **`avatars`** (or equivalent) so `getPublicUrl` works for `profiles.avatar_url`.
+- **Insert/update/delete:** restrict object keys so the first path segment equals `auth.uid()` (see [`supabase/migrations/20260410_avatars_storage_bucket.sql`](../supabase/migrations/20260410_avatars_storage_bucket.sql)).
+- **Select:** public read on that bucket is typical for profile images; tighten if you prefer signed URLs and change the app to store signed URLs instead.
+- Limit file size and MIME types (`image/jpeg`, `image/png`, `image/webp`) on the bucket.
+
 ## API Keys
 - Never ship `service_role` keys to the app.
 - Use only the public anon key in Expo (`EXPO_PUBLIC_*`).

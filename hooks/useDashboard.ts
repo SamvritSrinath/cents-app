@@ -38,6 +38,18 @@ export interface MonthlySpending {
   amount: number;
 }
 
+export interface WeekComparison {
+  thisWeek: number;
+  lastWeek: number;
+  changePercent: number;
+}
+
+export interface MerchantSpend {
+  merchant: string;
+  amount: number;
+  percentage: number;
+}
+
 /**
  * Get date range helpers
  */
@@ -49,6 +61,30 @@ function getMonthRange(monthsAgo: number = 0) {
   return {
     start: toLocalISODateString(start),
     end: toLocalISODateString(end),
+  };
+}
+
+/** Inclusive local-date range for the last 7 days ending `endDate`, and the prior 7 days. */
+function getRollingWeekPairRanges(): {
+  thisStart: string;
+  thisEnd: string;
+  lastStart: string;
+  lastEnd: string;
+} {
+  const endThis = new Date();
+  const startThis = new Date(endThis);
+  startThis.setDate(endThis.getDate() - 6);
+
+  const endLast = new Date(startThis);
+  endLast.setDate(startThis.getDate() - 1);
+  const startLast = new Date(endLast);
+  startLast.setDate(endLast.getDate() - 6);
+
+  return {
+    thisStart: toLocalISODateString(startThis),
+    thisEnd: toLocalISODateString(endThis),
+    lastStart: toLocalISODateString(startLast),
+    lastEnd: toLocalISODateString(endLast),
   };
 }
 
@@ -118,6 +154,98 @@ export function useDashboardStats() {
       };
     },
     staleTime: 1000 * 60 * 2, // Cache for 2 minutes
+  });
+}
+
+/**
+ * Compare spend in the last 7 days vs the previous 7 days (local calendar dates).
+ */
+export function useWeekComparison() {
+  return useQuery({
+    queryKey: [...DASHBOARD_KEY, 'weekCompare'],
+    queryFn: async (): Promise<WeekComparison> => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      const { thisStart, thisEnd, lastStart, lastEnd } = getRollingWeekPairRanges();
+
+      const [{ data: thisData, error: e1 }, { data: lastData, error: e2 }] =
+        await Promise.all([
+          supabase
+            .from('expenses')
+            .select('amount')
+            .eq('user_id', user.id)
+            .gte('expense_date', thisStart)
+            .lte('expense_date', thisEnd),
+          supabase
+            .from('expenses')
+            .select('amount')
+            .eq('user_id', user.id)
+            .gte('expense_date', lastStart)
+            .lte('expense_date', lastEnd),
+        ]);
+
+      if (e1) throw e1;
+      if (e2) throw e2;
+
+      const thisWeek = (thisData || []).reduce((s, r) => s + r.amount, 0);
+      const lastWeek = (lastData || []).reduce((s, r) => s + r.amount, 0);
+      const changePercent =
+        lastWeek === 0 ? 0 : ((thisWeek - lastWeek) / lastWeek) * 100;
+
+      return { thisWeek, lastWeek, changePercent };
+    },
+    staleTime: 1000 * 60 * 2,
+  });
+}
+
+/**
+ * Top merchants by spend in the current calendar month.
+ */
+export function useTopMerchants(limit: number = 5) {
+  return useQuery({
+    queryKey: [...DASHBOARD_KEY, 'merchants', limit],
+    queryFn: async (): Promise<MerchantSpend[]> => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      const range = getMonthRange(0);
+      const { data, error } = await supabase
+        .from('expenses')
+        .select('amount, merchant')
+        .eq('user_id', user.id)
+        .gte('expense_date', range.start)
+        .lte('expense_date', range.end);
+
+      if (error) throw error;
+
+      const totals = new Map<string, number>();
+      for (const row of data || []) {
+        const name = (row.merchant || 'Unknown').trim() || 'Unknown';
+        totals.set(name, (totals.get(name) || 0) + row.amount);
+      }
+
+      const sorted = Array.from(totals.entries()).sort((a, b) => b[1] - a[1]);
+      const top = sorted.slice(0, limit);
+      const sum = top.reduce((s, [, a]) => s + a, 0);
+
+      return top.map(([merchant, amount]) => ({
+        merchant,
+        amount,
+        percentage: sum === 0 ? 0 : (amount / sum) * 100,
+      }));
+    },
+    staleTime: 1000 * 60 * 2,
   });
 }
 

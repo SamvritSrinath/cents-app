@@ -30,6 +30,8 @@ import {
   useSpendingByCategory,
   useSpendingTrend,
   useRecentExpenses,
+  useWeekComparison,
+  useTopMerchants,
 } from '../../hooks/useDashboard';
 import { SpendingTrendChart } from '../../components/charts/SpendingTrendChart';
 import { CategoryPieChart } from '../../components/charts/CategoryPieChart';
@@ -59,6 +61,8 @@ export default function DashboardScreen() {
     useSpendingByCategory();
   const { data: trendData, refetch: refetchTrend } = useSpendingTrend(6);
   const { data: recentExpenses, refetch: refetchRecent } = useRecentExpenses(5);
+  const { data: weekStats, refetch: refetchWeek } = useWeekComparison();
+  const { data: topMerchants, refetch: refetchMerchants } = useTopMerchants(5);
 
   const isLoading = statsLoading;
   const isRefreshing = false;
@@ -68,6 +72,8 @@ export default function DashboardScreen() {
     refetchCategory();
     refetchTrend();
     refetchRecent();
+    refetchWeek();
+    refetchMerchants();
   };
 
   const handleViewAllExpenses = () => {
@@ -161,6 +167,65 @@ export default function DashboardScreen() {
               </View>
             </>
           )}
+        </View>
+
+        <View style={styles.rowCards}>
+          <View style={[styles.card, styles.halfCard]}>
+            <Text style={styles.cardLabel}>Last 7 days</Text>
+            <Text style={styles.cardAmountSmall}>
+              {formatCurrency(weekStats?.thisWeek ?? 0, defaultCurrency)}
+            </Text>
+            <View style={styles.changeRow}>
+              {(weekStats?.changePercent ?? 0) <= 0 ? (
+                <TrendingDown size={14} color={colors.semantic.success} />
+              ) : (
+                <TrendingUp size={14} color={colors.semantic.error} />
+              )}
+              <Text
+                style={[
+                  styles.changeTextSmall,
+                  {
+                    color:
+                      (weekStats?.changePercent ?? 0) <= 0
+                        ? colors.semantic.success
+                        : colors.semantic.error,
+                  },
+                ]}
+              >
+                {Math.abs(weekStats?.changePercent ?? 0).toFixed(1)}% vs prior
+                7d
+              </Text>
+            </View>
+          </View>
+          <View style={[styles.card, styles.halfCard]}>
+            <Text style={styles.cardLabel}>Prior 7 days</Text>
+            <Text style={styles.cardAmountSmall}>
+              {formatCurrency(weekStats?.lastWeek ?? 0, defaultCurrency)}
+            </Text>
+            <Text style={styles.cardSubMuted}>Comparison window</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Top vendors (this month)</Text>
+          <View style={styles.chartCard}>
+            {!topMerchants || topMerchants.length === 0 ? (
+              <Text style={styles.emptyInline}>
+                No merchant data for this month yet.
+              </Text>
+            ) : (
+              topMerchants.map((m) => (
+                <View key={m.merchant} style={styles.merchantRow}>
+                  <Text style={styles.merchantName} numberOfLines={1}>
+                    {m.merchant}
+                  </Text>
+                  <Text style={styles.merchantAmount}>
+                    {formatCurrency(m.amount, defaultCurrency)}
+                  </Text>
+                </View>
+              ))
+            )}
+          </View>
         </View>
 
         {/* Spending Trend Chart */}
@@ -269,6 +334,54 @@ function createStyles(colors: AppColors) {
     cardLabel: {
       ...typography.caption,
       color: colors.text.secondary,
+    },
+    rowCards: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginBottom: spacing.lg,
+    },
+    halfCard: {
+      flex: 1,
+      marginBottom: 0,
+      padding: spacing.md,
+    },
+    cardAmountSmall: {
+      ...typography.heading2,
+      color: colors.text.primary,
+      marginTop: spacing.xs,
+    },
+    changeTextSmall: {
+      ...typography.caption,
+      marginLeft: spacing.xs,
+    },
+    cardSubMuted: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+    },
+    merchantRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    merchantName: {
+      ...typography.body,
+      color: colors.text.primary,
+      flex: 1,
+      marginRight: spacing.md,
+    },
+    merchantAmount: {
+      ...typography.body,
+      color: colors.text.secondary,
+      fontWeight: '600',
+    },
+    emptyInline: {
+      ...typography.caption,
+      color: colors.text.muted,
+      paddingVertical: spacing.md,
     },
     cardAmount: {
       ...typography.heading1,
