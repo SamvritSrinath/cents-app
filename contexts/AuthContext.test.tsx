@@ -11,6 +11,10 @@ import { render, screen, waitFor } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { AuthProvider, useAuth } from './AuthContext';
 
+jest.mock('expo-linking', () => ({
+  createURL: (path: string) => `cents://test-host${path}`,
+}));
+
 // Mock Supabase
 jest.mock('../lib/supabase', () => ({
   supabase: {
