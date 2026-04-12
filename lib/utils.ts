@@ -1,6 +1,15 @@
-// Utility functions
+/**
+ * Date, currency, and formatting helpers biased toward **local calendar** dates (`YYYY-MM-DD`) and US display defaults.
+ */
 
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** US short numeric: MM/DD/YYYY */
+export const US_SHORT_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+};
 
 /**
  * YYYY-MM-DD for the device's local calendar day (not UTC).
@@ -23,6 +32,28 @@ export function parseCalendarOrDateString(input: string | Date): Date {
     return new Date(y, mo - 1, d);
   }
   return new Date(input);
+}
+
+/**
+ * True if string is a valid calendar YYYY-MM-DD (local date parts match).
+ */
+export function isValidIsoDateString(s: string): boolean {
+  if (!DATE_ONLY_RE.test(s)) return false;
+  const [y, mo, day] = s.split('-').map(Number);
+  const d = new Date(y, mo - 1, day);
+  return (
+    d.getFullYear() === y && d.getMonth() === mo - 1 && d.getDate() === day
+  );
+}
+
+/** Format a stored YYYY-MM-DD (or Date) as MM/DD/YYYY for US display. */
+export function formatUsShortDate(isoOrDate: string | Date): string {
+  const d =
+    typeof isoOrDate === 'string'
+      ? parseCalendarOrDateString(isoOrDate)
+      : isoOrDate;
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', US_SHORT_DATE_OPTIONS);
 }
 
 function startOfLocalDay(d: Date): number {
@@ -48,11 +79,7 @@ export function formatCurrency(
  */
 export function formatDate(
   date: string | Date,
-  options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }
+  options: Intl.DateTimeFormatOptions = US_SHORT_DATE_OPTIONS
 ): string {
   const d = typeof date === 'string' ? parseCalendarOrDateString(date) : date;
   return d.toLocaleDateString('en-US', options);

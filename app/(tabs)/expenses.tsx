@@ -1,18 +1,18 @@
 /**
  * @module ExpensesScreen
  * @owner Expenses
- * @updates 2024-12-31 - Connected to Supabase with real expense data
+ * @updates 2026-04-11 - SectionList by month, default last 30 days with optional older data
  *
- * Expenses list screen with infinite scroll and add expense FAB.
+ * Expenses list with infinite scroll, month sections, and add expense FAB.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
-  FlatList,
+  SectionList,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
@@ -27,14 +27,36 @@ import { useExpenses, ExpenseWithCategory } from '../../hooks/useExpenses';
 import { typography, spacing } from '../../theme';
 import { useTheme } from '../../contexts/ThemeContext';
 import { AppColors } from '../../theme/colors';
+import { toLocalISODateString } from '../../lib/utils';
+
+function formatExpenseMonthTitle(ym: string): string {
+  const [y, m] = ym.split('-').map(Number);
+  if (!y || !m) return ym;
+  return new Date(y, m - 1, 1).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+type ExpenseSection = { title: string; data: ExpenseWithCategory[] };
 
 export default function ExpensesScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const [includeOlder, setIncludeOlder] = useState(false);
+
+  const expenseFilters = useMemo(() => {
+    if (includeOlder) return undefined;
+    const start = new Date();
+    start.setDate(start.getDate() - 30);
+    return { startDate: toLocalISODateString(start) };
+  }, [includeOlder]);
+
   const styles = useMemo(
     () => createStyles(colors, insets.bottom),
     [colors, insets.bottom]
   );
+
   const {
     data,
     isLoading,
@@ -44,10 +66,23 @@ export default function ExpensesScreen() {
     isFetchingNextPage,
     refetch,
     isRefetching,
-  } = useExpenses();
+  } = useExpenses(expenseFilters);
 
-  // Flatten paginated data
   const expenses = data?.pages.flat() || [];
+
+  const sections: ExpenseSection[] = useMemo(() => {
+    const groups = new Map<string, ExpenseWithCategory[]>();
+    for (const e of expenses) {
+      const key = e.expense_date.slice(0, 7);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(e);
+    }
+    const keys = Array.from(groups.keys()).sort((a, b) => b.localeCompare(a));
+    return keys.map((key) => ({
+      title: formatExpenseMonthTitle(key),
+      data: groups.get(key)!,
+    }));
+  }, [expenses]);
 
   const handleExpensePress = (expense: ExpenseWithCategory) => {
     router.push(`/expenses/${expense.id}` as Href);
@@ -67,6 +102,12 @@ export default function ExpensesScreen() {
     <ExpenseCard expense={item} onPress={() => handleExpensePress(item)} />
   );
 
+  const renderSectionHeader = ({ section }: { section: ExpenseSection }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{section.title}</Text>
+    </View>
+  );
+
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
     return (
@@ -79,10 +120,32 @@ export default function ExpensesScreen() {
   const renderEmpty = () => (
     <View style={styles.emptyState}>
       <Receipt size={48} color={colors.text.muted} />
-      <Text style={styles.emptyText}>No expenses yet</Text>
+      <Text style={styles.emptyText}>No expenses in this range</Text>
       <Text style={styles.emptySubtext}>
-        Tap the + button to add your first expense
+        {includeOlder
+          ? 'Add an expense or pull to refresh.'
+          : 'Try including older expenses, or add new ones with +.'}
       </Text>
+    </View>
+  );
+
+  const listHeader = (
+    <View style={styles.filterBanner}>
+      <Text style={styles.filterBannerText}>
+        {includeOlder ? 'All time (paginated)' : 'Last 30 days'}
+      </Text>
+      <Pressable
+        onPress={() => setIncludeOlder((v) => !v)}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={
+          includeOlder ? 'Show last 30 days only' : 'Include older expenses'
+        }
+      >
+        <Text style={styles.filterBannerAction}>
+          {includeOlder ? 'Last 30 days only' : 'Include older'}
+        </Text>
+      </Pressable>
     </View>
   );
 
@@ -104,14 +167,17 @@ export default function ExpensesScreen() {
           </Pressable>
         </View>
       ) : (
-        <FlatList
-          data={expenses}
+        <SectionList
+          sections={sections}
           renderItem={renderExpense}
+          renderSectionHeader={renderSectionHeader}
           keyExtractor={(item) => item.id}
+          stickySectionHeadersEnabled
           contentContainerStyle={[
             styles.listContent,
-            expenses.length === 0 && styles.emptyListContent,
+            sections.length === 0 && styles.emptyListContent,
           ]}
+          ListHeaderComponent={listHeader}
           ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
           onEndReached={handleLoadMore}
@@ -127,7 +193,6 @@ export default function ExpensesScreen() {
         />
       )}
 
-      {/* Floating Action Button */}
       <Pressable
         style={styles.fab}
         onPress={handleAddExpense}
@@ -155,6 +220,39 @@ function createStyles(colors: AppColors, bottomInset: number) {
     title: {
       ...typography.heading1,
       color: colors.text.primary,
+    },
+    filterBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      marginBottom: spacing.sm,
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    filterBannerText: {
+      ...typography.caption,
+      color: colors.text.secondary,
+    },
+    filterBannerAction: {
+      ...typography.caption,
+      color: colors.accent.default,
+      fontWeight: '700',
+    },
+    sectionHeader: {
+      backgroundColor: colors.background,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: 0,
+    },
+    sectionHeaderText: {
+      ...typography.caption,
+      color: colors.text.muted,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
     },
     loadingContainer: {
       flex: 1,
@@ -188,8 +286,7 @@ function createStyles(colors: AppColors, bottomInset: number) {
       paddingBottom: listPadBottom,
     },
     emptyListContent: {
-      flex: 1,
-      justifyContent: 'center',
+      flexGrow: 1,
     },
     emptyState: {
       alignItems: 'center',

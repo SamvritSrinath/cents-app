@@ -8,7 +8,6 @@
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,8 +15,7 @@ import { BuildConfigMissingScreen } from '../components/BuildConfigMissingScreen
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 import { isMissingSupabasePublicEnv } from '../lib/buildConfig';
-import { loadDevicePreferences } from '../lib/devicePreferences';
-import { syncNotificationSchedulesAsync } from '../lib/notifications';
+import { NotificationPreferenceSync } from '../components/NotificationPreferenceSync';
 
 // Configure React Query client
 const queryClient = new QueryClient({
@@ -47,18 +45,10 @@ function RootNavigator() {
     },
   };
 
-  useEffect(() => {
-    const syncNotificationState = async () => {
-      const preferences = await loadDevicePreferences();
-      await syncNotificationSchedulesAsync(preferences);
-    };
-
-    syncNotificationState();
-  }, []);
-
   return (
     <PaperProvider theme={paperTheme}>
       <AuthProvider>
+        <NotificationPreferenceSync />
         <StatusBar style={resolvedTheme === 'light' ? 'dark' : 'light'} />
         <Stack
           screenOptions={{

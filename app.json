@@ -24,7 +24,6 @@
       "package": "com.cents.app",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "usesCleartextTraffic": true,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_MEDIA_IMAGES",
@@ -42,7 +41,16 @@
           "photosPermission": "Allow Cents to access your photos to scan receipts.",
           "cameraPermission": "Allow Cents to use the camera to scan receipts."
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true

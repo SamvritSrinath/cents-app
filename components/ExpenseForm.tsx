@@ -20,7 +20,11 @@ import {
   Modal,
   Animated,
   useWindowDimensions,
+  useColorScheme,
 } from 'react-native';
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Calendar,
@@ -38,7 +42,13 @@ import { ReceiptScanner } from './ReceiptScanner';
 import { suggestCategoryIdFromReceiptInput } from '../lib/receiptCategorization';
 import { normalizeExpenseDateFromOcr } from '../lib/receiptOcr';
 import { getCategoryIcon } from '../lib/categoryIcons';
-import { formatCurrency, toLocalISODateString } from '../lib/utils';
+import {
+  formatCurrency,
+  toLocalISODateString,
+  formatUsShortDate,
+  isValidIsoDateString,
+  parseCalendarOrDateString,
+} from '../lib/utils';
 import { typography, spacing } from '../theme';
 import { AppColors } from '../theme/colors';
 import { useTheme } from '../contexts/ThemeContext';
@@ -97,6 +107,27 @@ export function ExpenseForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [hasAutoCategorized, setHasAutoCategorized] = useState(false);
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const colorScheme = useColorScheme();
+
+  const datePickerValue = useMemo(() => {
+    if (isValidIsoDateString(expenseDate)) {
+      return parseCalendarOrDateString(expenseDate);
+    }
+    return new Date();
+  }, [expenseDate]);
+
+  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (event.type === 'dismissed') {
+      return;
+    }
+    if (date && !Number.isNaN(date.getTime())) {
+      setExpenseDate(toLocalISODateString(date));
+    }
+  };
 
   const [receiptLines, setReceiptLines] = useState<ReceiptLine[]>(() =>
     (initialData?.line_items ?? []).map((li) => ({
@@ -203,8 +234,8 @@ export function ExpenseForm({
       newErrors.amount = 'Please enter a valid amount';
     }
 
-    if (!expenseDate) {
-      newErrors.date = 'Please select a date';
+    if (!expenseDate || !isValidIsoDateString(expenseDate)) {
+      newErrors.date = 'Please select a valid date';
     }
 
     if (splitByLine && canSplit) {
@@ -411,20 +442,27 @@ export function ExpenseForm({
           </Text>
         </View>
 
-        {/* Date Input */}
+        {/* Date — stored as YYYY-MM-DD; shown as MM/DD/YYYY */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Date *</Text>
-          <View style={styles.inputWithIcon}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.inputWithIcon,
+              errors.date ? styles.inputError : null,
+              pressed ? styles.datePressablePressed : null,
+            ]}
+            onPress={() => setShowDatePicker(true)}
+            testID="date-input"
+            accessibilityRole="button"
+            accessibilityLabel="Expense date, opens calendar"
+          >
             <Calendar size={20} color={colors.text.muted} />
-            <TextInput
-              style={styles.textInput}
-              value={expenseDate}
-              onChangeText={setExpenseDate}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.text.muted}
-              testID="date-input"
-            />
-          </View>
+            <Text style={styles.dateDisplayText}>
+              {isValidIsoDateString(expenseDate)
+                ? formatUsShortDate(expenseDate)
+                : 'MM/DD/YYYY'}
+            </Text>
+          </Pressable>
           {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
         </View>
 
@@ -587,291 +625,384 @@ export function ExpenseForm({
           </Animated.View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showDatePicker && Platform.OS === 'ios'}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDatePicker(false)}
+      >
+        <View style={styles.datePickerOverlay}>
+          <Pressable
+            style={styles.datePickerBackdrop}
+            onPress={() => setShowDatePicker(false)}
+            accessibilityLabel="Dismiss calendar"
+          />
+          <View
+            style={[
+              styles.datePickerSheet,
+              { paddingBottom: Math.max(insets.bottom, spacing.md) },
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
+            <View style={styles.datePickerHeader}>
+              <Text style={styles.datePickerTitle}>Expense date</Text>
+              <Pressable onPress={() => setShowDatePicker(false)} hitSlop={12}>
+                <Text style={styles.datePickerDone}>Done</Text>
+              </Pressable>
+            </View>
+            <DateTimePicker
+              value={datePickerValue}
+              mode="date"
+              display="inline"
+              themeVariant={colorScheme === 'dark' ? 'dark' : 'light'}
+              onChange={handleDateChange}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {Platform.OS === 'android' && showDatePicker ? (
+        <DateTimePicker
+          value={datePickerValue}
+          mode="date"
+          display="default"
+          themeVariant={colorScheme === 'dark' ? 'dark' : 'light'}
+          onChange={handleDateChange}
+        />
+      ) : null}
     </KeyboardAvoidingView>
   );
 }
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    padding: spacing.md,
-  },
-  scanSection: {
-    marginBottom: spacing.md,
-  },
-  scanToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-  },
-  scanToggleText: {
-    ...typography.body,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-  inputGroup: {
-    marginBottom: spacing.lg,
-  },
-  label: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  amountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-  },
-  currencySymbol: {
-    ...typography.heading1,
-    color: colors.text.muted,
-    marginRight: spacing.xs,
-  },
-  amountInput: {
-    flex: 1,
-    ...typography.heading1,
-    color: colors.text.primary,
-    paddingVertical: spacing.md,
-  },
-  afterAmountHint: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.sm,
-  },
-  inputWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  textInput: {
-    flex: 1,
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  selectorText: {
-    flex: 1,
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  placeholderText: {
-    color: colors.text.muted,
-  },
-  categoryEmoji: {
-    fontSize: 20,
-  },
-  notesInput: {
-    alignItems: 'flex-start',
-    minHeight: 100,
-  },
-  notesIcon: {
-    marginTop: 2,
-  },
-  notesTextInput: {
-    minHeight: 80,
-  },
-  inputError: {
-    borderColor: colors.semantic.error,
-  },
-  errorText: {
-    ...typography.caption,
-    color: colors.semantic.error,
-    marginTop: spacing.xs,
-  },
-  warningText: {
-    ...typography.caption,
-    color: colors.semantic.warning,
-    marginTop: spacing.xs,
-  },
-  helperText: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-  },
-  splitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-  },
-  splitRowText: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  splitLabels: {
-    flex: 1,
-  },
-  splitTitle: {
-    ...typography.body,
-    color: colors.text.primary,
-    fontWeight: '600',
-  },
-  splitSubtitle: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-  },
-  openPanelButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: spacing.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  openPanelButtonText: {
-    ...typography.body,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-  actions: {
-    flexDirection: 'row',
-    padding: spacing.md,
-    paddingTop: spacing.md,
-    gap: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: colors.card,
-    paddingVertical: spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  cancelButtonText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    fontWeight: '600',
-  },
-  submitButton: {
-    flex: 1,
-    backgroundColor: colors.accent.default,
-    paddingVertical: spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '600',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  splitOverlay: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  splitBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    zIndex: 0,
-  },
-  splitPanel: {
-    backgroundColor: colors.background,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.border,
-    maxHeight: '100%',
-    zIndex: 1,
-    elevation: 8,
-  },
-  splitPanelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  splitPanelTitle: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  splitPanelDone: {
-    ...typography.body,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-  splitPanelMeta: {
-    ...typography.caption,
-    color: colors.text.muted,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
-  },
-  splitPanelList: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-  },
-  splitLineRow: {
-    marginBottom: spacing.md,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  splitLineMain: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  splitLineName: {
-    ...typography.body,
-    color: colors.text.primary,
-    flex: 1,
-    fontWeight: '500',
-  },
-  splitLineAmount: {
-    ...typography.body,
-    color: colors.text.secondary,
-    fontWeight: '600',
-  },
-  splitLineCategoryBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.card,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  splitLineCategoryLabel: {
-    ...typography.caption,
-    color: colors.text.primary,
-    flex: 1,
-    fontWeight: '600',
-  },
-});
+    container: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+      padding: spacing.md,
+    },
+    scanSection: {
+      marginBottom: spacing.md,
+    },
+    scanToggle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      paddingVertical: spacing.sm,
+    },
+    scanToggleText: {
+      ...typography.body,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    inputGroup: {
+      marginBottom: spacing.lg,
+    },
+    label: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      marginBottom: spacing.xs,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    amountContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: spacing.md,
+    },
+    currencySymbol: {
+      ...typography.heading1,
+      color: colors.text.muted,
+      marginRight: spacing.xs,
+    },
+    amountInput: {
+      flex: 1,
+      ...typography.heading1,
+      color: colors.text.primary,
+      paddingVertical: spacing.md,
+    },
+    afterAmountHint: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.sm,
+    },
+    inputWithIcon: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+      gap: spacing.sm,
+    },
+    datePressablePressed: {
+      opacity: 0.85,
+    },
+    dateDisplayText: {
+      flex: 1,
+      ...typography.body,
+      color: colors.text.primary,
+    },
+    datePickerOverlay: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    datePickerBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    datePickerSheet: {
+      position: 'relative',
+      zIndex: 1,
+      backgroundColor: colors.background,
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      borderTopWidth: 1,
+      borderLeftWidth: 1,
+      borderRightWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+    },
+    datePickerHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    datePickerTitle: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '600',
+    },
+    datePickerDone: {
+      ...typography.body,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    textInput: {
+      flex: 1,
+      ...typography.body,
+      color: colors.text.primary,
+    },
+    selectorText: {
+      flex: 1,
+      ...typography.body,
+      color: colors.text.primary,
+    },
+    placeholderText: {
+      color: colors.text.muted,
+    },
+    categoryEmoji: {
+      fontSize: 20,
+    },
+    notesInput: {
+      alignItems: 'flex-start',
+      minHeight: 100,
+    },
+    notesIcon: {
+      marginTop: 2,
+    },
+    notesTextInput: {
+      minHeight: 80,
+    },
+    inputError: {
+      borderColor: colors.semantic.error,
+    },
+    errorText: {
+      ...typography.caption,
+      color: colors.semantic.error,
+      marginTop: spacing.xs,
+    },
+    warningText: {
+      ...typography.caption,
+      color: colors.semantic.warning,
+      marginTop: spacing.xs,
+    },
+    helperText: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+    },
+    splitRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.md,
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.md,
+    },
+    splitRowText: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+    },
+    splitLabels: {
+      flex: 1,
+    },
+    splitTitle: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '600',
+    },
+    splitSubtitle: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+    },
+    openPanelButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: spacing.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.md,
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    openPanelButtonText: {
+      ...typography.body,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    actions: {
+      flexDirection: 'row',
+      padding: spacing.md,
+      paddingTop: spacing.md,
+      gap: spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    cancelButton: {
+      flex: 1,
+      backgroundColor: colors.card,
+      paddingVertical: spacing.md,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    cancelButtonText: {
+      ...typography.body,
+      color: colors.text.secondary,
+      fontWeight: '600',
+    },
+    submitButton: {
+      flex: 1,
+      backgroundColor: colors.accent.default,
+      paddingVertical: spacing.md,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    submitButtonText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '600',
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    splitOverlay: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    },
+    splitBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0,0,0,0.45)',
+      zIndex: 0,
+    },
+    splitPanel: {
+      backgroundColor: colors.background,
+      borderLeftWidth: 1,
+      borderLeftColor: colors.border,
+      maxHeight: '100%',
+      zIndex: 1,
+      elevation: 8,
+    },
+    splitPanelHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.md,
+      marginBottom: spacing.sm,
+    },
+    splitPanelTitle: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    splitPanelDone: {
+      ...typography.body,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    splitPanelMeta: {
+      ...typography.caption,
+      color: colors.text.muted,
+      paddingHorizontal: spacing.md,
+      marginBottom: spacing.md,
+    },
+    splitPanelList: {
+      flex: 1,
+      paddingHorizontal: spacing.md,
+    },
+    splitLineRow: {
+      marginBottom: spacing.md,
+      paddingBottom: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    splitLineMain: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+      marginBottom: spacing.sm,
+    },
+    splitLineName: {
+      ...typography.body,
+      color: colors.text.primary,
+      flex: 1,
+      fontWeight: '500',
+    },
+    splitLineAmount: {
+      ...typography.body,
+      color: colors.text.secondary,
+      fontWeight: '600',
+    },
+    splitLineCategoryBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors.card,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+    },
+    splitLineCategoryLabel: {
+      ...typography.caption,
+      color: colors.text.primary,
+      flex: 1,
+      fontWeight: '600',
+    },
+  });
 }

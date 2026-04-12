@@ -19,18 +19,32 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Plus, Tag, Trash2, Sparkles, Layers3 } from 'lucide-react-native';
+import {
+  Plus,
+  Tag,
+  Trash2,
+  Sparkles,
+  Pencil,
+  Wallet,
+} from 'lucide-react-native';
 import {
   useCategories,
   useCreateCategory,
   useDeleteCategory,
 } from '../../hooks/useCategories';
+import {
+  useBudgetProgress,
+  useCreateBudget,
+  useDeleteBudget,
+  useUpdateBudget,
+} from '../../hooks/useBudgets';
 import { useSpendingByCategory } from '../../hooks/useDashboard';
-import { Category } from '../../types/database';
+import type { BudgetProgressRow, Category } from '../../types/database';
 import { typography, spacing } from '../../theme';
 import { AppColors } from '../../theme/colors';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getCategoryIcon } from '../../lib/categoryIcons';
+import { formatCurrency } from '../../lib/utils';
 
 const COLOR_CHOICES = [
   '#10b981',
@@ -83,8 +97,26 @@ export default function CategoriesScreen() {
   const { data: spendingByCategory = [] } = useSpendingByCategory();
   const createCategory = useCreateCategory();
   const deleteCategory = useDeleteCategory();
+  const { data: budgetProgress = [], isLoading: budgetLoading } =
+    useBudgetProgress();
+  const createBudget = useCreateBudget();
+  const deleteBudget = useDeleteBudget();
+  const updateBudget = useUpdateBudget();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [budgetCategoryId, setBudgetCategoryId] = useState('');
+  const [budgetAmount, setBudgetAmount] = useState('');
+  const [budgetPeriod, setBudgetPeriod] = useState<
+    'weekly' | 'monthly' | 'yearly'
+  >('monthly');
+  const [editBudgetRow, setEditBudgetRow] = useState<BudgetProgressRow | null>(
+    null
+  );
+  const [editAmount, setEditAmount] = useState('');
+  const [editPeriod, setEditPeriod] = useState<'weekly' | 'monthly' | 'yearly'>(
+    'monthly'
+  );
   const [categoryName, setCategoryName] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLOR_CHOICES[0]);
   const [selectedEmoji, setSelectedEmoji] = useState('📦');
@@ -96,6 +128,16 @@ export default function CategoriesScreen() {
   const customCategories = useMemo(
     () => categories.filter((category) => !category.is_default),
     [categories]
+  );
+
+  const budgetedCategoryIds = useMemo(
+    () => new Set(budgetProgress.map((b) => b.category_id)),
+    [budgetProgress]
+  );
+
+  const categoriesAvailableForBudget = useMemo(
+    () => categories.filter((c) => !budgetedCategoryIds.has(c.id)),
+    [categories, budgetedCategoryIds]
   );
 
   const handleCreateCategory = async () => {
@@ -120,6 +162,89 @@ export default function CategoriesScreen() {
         error instanceof Error ? error.message : 'Please try again.'
       );
     }
+  };
+
+  const handleCreateBudget = async () => {
+    const amount = Number.parseFloat(budgetAmount);
+    if (!budgetCategoryId) {
+      Alert.alert('Category', 'Pick a category for this budget.');
+      return;
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      Alert.alert('Amount', 'Enter a positive budget amount.');
+      return;
+    }
+    try {
+      await createBudget.mutateAsync({
+        category_id: budgetCategoryId,
+        amount,
+        period: budgetPeriod,
+      });
+      setShowBudgetModal(false);
+      setBudgetCategoryId('');
+      setBudgetAmount('');
+      setBudgetPeriod('monthly');
+    } catch (error) {
+      Alert.alert(
+        'Could not create budget',
+        error instanceof Error ? error.message : 'Please try again.'
+      );
+    }
+  };
+
+  const openEditBudget = (row: BudgetProgressRow) => {
+    setEditBudgetRow(row);
+    setEditAmount(String(row.budget_amount));
+    const p = row.period.toLowerCase();
+    setEditPeriod(
+      p === 'weekly' || p === 'yearly' || p === 'monthly' ? p : 'monthly'
+    );
+  };
+
+  const handleUpdateBudget = async () => {
+    if (!editBudgetRow) return;
+    const amount = Number.parseFloat(editAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      Alert.alert('Amount', 'Enter a positive budget amount.');
+      return;
+    }
+    try {
+      await updateBudget.mutateAsync({
+        id: editBudgetRow.budget_id,
+        amount,
+        period: editPeriod,
+      });
+      setEditBudgetRow(null);
+    } catch (error) {
+      Alert.alert(
+        'Could not update budget',
+        error instanceof Error ? error.message : 'Please try again.'
+      );
+    }
+  };
+
+  const handleDeleteBudgetRow = (row: BudgetProgressRow) => {
+    Alert.alert(
+      'Delete budget?',
+      `Remove the budget for ${row.category_name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteBudget.mutateAsync(row.budget_id);
+            } catch (error) {
+              Alert.alert(
+                'Could not delete budget',
+                error instanceof Error ? error.message : 'Please try again.'
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleDeleteCategory = (id: string, name: string) => {
@@ -149,22 +274,106 @@ export default function CategoriesScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Categories</Text>
+        <View style={styles.headerTextBlock}>
+          <Text style={styles.title}>Budgets & Categories</Text>
           <Text style={styles.subtitle}>
-            Organize receipts and expenses into fast, clear buckets.
+            Set spending limits per category and manage your category library.
           </Text>
         </View>
-        <Pressable
-          style={styles.createButton}
-          onPress={() => setShowCreateModal(true)}
-        >
-          <Plus size={18} color={colors.background} />
-          <Text style={styles.createButtonText}>New</Text>
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable
+            style={styles.headerSecondaryButton}
+            onPress={() => setShowBudgetModal(true)}
+          >
+            <Wallet size={18} color={colors.accent.default} />
+            <Text style={styles.headerSecondaryButtonText}>Budget</Text>
+          </Pressable>
+          <Pressable
+            style={styles.createButton}
+            onPress={() => setShowCreateModal(true)}
+          >
+            <Plus size={18} color={colors.background} />
+            <Text style={styles.createButtonText}>Category</Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Budgets</Text>
+          </View>
+          {budgetLoading ? (
+            <View style={styles.loadingCard}>
+              <ActivityIndicator size="small" color={colors.accent.default} />
+            </View>
+          ) : budgetProgress.length === 0 ? (
+            <View style={styles.summaryCard}>
+              <Wallet size={24} color={colors.text.muted} />
+              <Text style={styles.emptySummaryText}>
+                No budgets yet. Tap Budget to add a limit for a category.
+              </Text>
+            </View>
+          ) : (
+            budgetProgress.map((row) => {
+              const pct = Math.min(100, Math.max(0, row.percentage_used));
+              const over = row.spent_amount > row.budget_amount;
+              return (
+                <View key={row.budget_id} style={styles.budgetCard}>
+                  <View style={styles.budgetCardTop}>
+                    <View style={styles.budgetCardTitleRow}>
+                      <Text style={styles.budgetEmoji}>
+                        {getCategoryIcon(row.category_name, row.category_icon)}
+                      </Text>
+                      <Text style={styles.budgetCategoryName} numberOfLines={1}>
+                        {row.category_name}
+                      </Text>
+                    </View>
+                    <View style={styles.budgetActions}>
+                      <Pressable
+                        onPress={() => openEditBudget(row)}
+                        hitSlop={8}
+                        accessibilityLabel="Edit budget"
+                      >
+                        <Pencil size={18} color={colors.text.secondary} />
+                      </Pressable>
+                      <Pressable
+                        onPress={() => handleDeleteBudgetRow(row)}
+                        hitSlop={8}
+                        accessibilityLabel="Delete budget"
+                      >
+                        <Trash2 size={18} color={colors.semantic.error} />
+                      </Pressable>
+                    </View>
+                  </View>
+                  <Text style={styles.budgetAmounts}>
+                    {formatCurrency(row.spent_amount)} of{' '}
+                    {formatCurrency(row.budget_amount)} · {row.period}
+                  </Text>
+                  <View style={styles.progressTrack}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        {
+                          width: `${pct}%`,
+                          backgroundColor: over
+                            ? colors.semantic.error
+                            : colors.accent.default,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text style={styles.budgetRemaining}>
+                    {row.remaining_amount >= 0
+                      ? `${formatCurrency(row.remaining_amount)} left`
+                      : `${formatCurrency(-row.remaining_amount)} over`}
+                  </Text>
+                </View>
+              );
+            })
+          )}
+        </View>
+
         <View style={styles.heroCard}>
           <View style={styles.heroIcon}>
             <Sparkles size={24} color={colors.accent.default} />
@@ -269,19 +478,6 @@ export default function CategoriesScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Budgets Next</Text>
-          </View>
-          <View style={styles.summaryCard}>
-            <Layers3 size={24} color={colors.text.muted} />
-            <Text style={styles.emptySummaryText}>
-              Budgets will build on these categories, so the structure stays
-              consistent.
-            </Text>
-          </View>
-        </View>
-
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
@@ -380,6 +576,182 @@ export default function CategoriesScreen() {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showBudgetModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowBudgetModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <ScrollView
+            contentContainerStyle={styles.budgetModalScroll}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>New budget</Text>
+              <Text style={styles.modalSubtitle}>
+                Choose a category without a budget yet, set a limit, and pick
+                how often it resets.
+              </Text>
+
+              {categoriesAvailableForBudget.length === 0 ? (
+                <Text style={styles.modalHint}>
+                  Every category already has a budget, or you have no categories
+                  yet.
+                </Text>
+              ) : (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.categoryPickScroll}
+                >
+                  {categoriesAvailableForBudget.map((c) => {
+                    const selected = budgetCategoryId === c.id;
+                    return (
+                      <Pressable
+                        key={c.id}
+                        onPress={() => setBudgetCategoryId(c.id)}
+                        style={[
+                          styles.categoryPickChip,
+                          selected && styles.categoryPickChipSelected,
+                        ]}
+                      >
+                        <Text style={styles.categoryPickChipText}>
+                          {getCategoryIcon(c.name, c.icon)} {c.name}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
+              )}
+
+              <Text style={styles.colorLabel}>Amount</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={budgetAmount}
+                onChangeText={setBudgetAmount}
+                placeholder="e.g. 400"
+                placeholderTextColor={colors.text.muted}
+                keyboardType="decimal-pad"
+              />
+
+              <Text style={styles.colorLabel}>Period</Text>
+              <View style={styles.periodRow}>
+                {(['weekly', 'monthly', 'yearly'] as const).map((p) => (
+                  <Pressable
+                    key={p}
+                    onPress={() => setBudgetPeriod(p)}
+                    style={[
+                      styles.periodChip,
+                      budgetPeriod === p && styles.periodChipSelected,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.periodChipText,
+                        budgetPeriod === p && styles.periodChipTextSelected,
+                      ]}
+                    >
+                      {p}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              <View style={styles.modalActions}>
+                <Pressable
+                  style={[styles.modalButton, styles.modalButtonSecondary]}
+                  onPress={() => setShowBudgetModal(false)}
+                >
+                  <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.modalButton, styles.modalButtonPrimary]}
+                  onPress={() => void handleCreateBudget()}
+                  disabled={
+                    createBudget.isPending ||
+                    categoriesAvailableForBudget.length === 0
+                  }
+                >
+                  <Text style={styles.modalButtonPrimaryText}>
+                    {createBudget.isPending ? 'Saving...' : 'Save'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={editBudgetRow !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEditBudgetRow(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Edit budget</Text>
+            {editBudgetRow ? (
+              <Text style={styles.modalSubtitle}>
+                {editBudgetRow.category_name}
+              </Text>
+            ) : null}
+
+            <Text style={styles.colorLabel}>Amount</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editAmount}
+              onChangeText={setEditAmount}
+              placeholder="Amount"
+              placeholderTextColor={colors.text.muted}
+              keyboardType="decimal-pad"
+            />
+
+            <Text style={styles.colorLabel}>Period</Text>
+            <View style={styles.periodRow}>
+              {(['weekly', 'monthly', 'yearly'] as const).map((p) => (
+                <Pressable
+                  key={p}
+                  onPress={() => setEditPeriod(p)}
+                  style={[
+                    styles.periodChip,
+                    editPeriod === p && styles.periodChipSelected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.periodChipText,
+                      editPeriod === p && styles.periodChipTextSelected,
+                    ]}
+                  >
+                    {p}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View style={styles.modalActions}>
+              <Pressable
+                style={[styles.modalButton, styles.modalButtonSecondary]}
+                onPress={() => setEditBudgetRow(null)}
+              >
+                <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.modalButton, styles.modalButtonPrimary]}
+                onPress={() => void handleUpdateBudget()}
+                disabled={updateBudget.isPending}
+              >
+                <Text style={styles.modalButtonPrimaryText}>
+                  {updateBudget.isPending ? 'Saving...' : 'Update'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -467,6 +839,143 @@ function createStyles(colors: AppColors) {
       justifyContent: 'space-between',
       gap: spacing.md,
       alignItems: 'flex-start',
+    },
+    headerTextBlock: {
+      flex: 1,
+      minWidth: 0,
+    },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    headerSecondaryButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.sm,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+    },
+    headerSecondaryButtonText: {
+      ...typography.caption,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    budgetCard: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.md,
+      marginHorizontal: spacing.md,
+      marginBottom: spacing.sm,
+    },
+    budgetCardTop: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    budgetCardTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      flex: 1,
+      minWidth: 0,
+    },
+    budgetEmoji: {
+      fontSize: 20,
+    },
+    budgetCategoryName: {
+      ...typography.body,
+      color: colors.text.primary,
+      fontWeight: '600',
+      flex: 1,
+    },
+    budgetActions: {
+      flexDirection: 'row',
+      gap: spacing.md,
+    },
+    budgetAmounts: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      marginTop: spacing.xs,
+    },
+    progressTrack: {
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: colors.border,
+      marginTop: spacing.sm,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: 4,
+    },
+    budgetRemaining: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: spacing.xs,
+    },
+    budgetModalScroll: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      paddingVertical: spacing.xl,
+    },
+    categoryPickScroll: {
+      marginBottom: spacing.md,
+      maxHeight: 48,
+    },
+    categoryPickChip: {
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginRight: spacing.sm,
+      backgroundColor: colors.background,
+    },
+    categoryPickChipSelected: {
+      borderColor: colors.accent.default,
+      backgroundColor: `${colors.accent.default}18`,
+    },
+    categoryPickChipText: {
+      ...typography.caption,
+      color: colors.text.primary,
+    },
+    periodRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+      marginBottom: spacing.md,
+    },
+    periodChip: {
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    periodChipSelected: {
+      borderColor: colors.accent.default,
+      backgroundColor: `${colors.accent.default}18`,
+    },
+    periodChipText: {
+      ...typography.caption,
+      color: colors.text.secondary,
+      textTransform: 'capitalize',
+    },
+    periodChipTextSelected: {
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    modalHint: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginBottom: spacing.md,
     },
     title: {
       ...typography.heading1,

@@ -18,14 +18,16 @@ export function BuildConfigMissingScreen() {
         </Text>
         <Text style={[styles.body, { color: c.text.secondary }]}>
           This install was built without{' '}
-          <Text style={{ color: c.text.primary }}>EXPO_PUBLIC_SUPABASE_URL</Text>{' '}
+          <Text style={{ color: c.text.primary }}>
+            EXPO_PUBLIC_SUPABASE_URL
+          </Text>{' '}
           and{' '}
           <Text style={{ color: c.text.primary }}>
             EXPO_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
           </Text>
           . Expo Go works because your Mac loads{' '}
-          <Text style={{ color: c.text.primary }}>.env.local</Text>; EAS does not
-          upload that file.
+          <Text style={{ color: c.text.primary }}>.env.local</Text>; EAS does
+          not upload that file.
         </Text>
         <Text style={[styles.subtitle, { color: c.text.primary }]}>
           Fix (one rebuild)
@@ -36,7 +38,9 @@ export function BuildConfigMissingScreen() {
           <Text style={{ color: c.text.primary }}>preview</Text> environment
           (same values as .env.local).{'\n'}
           3. Optional:{' '}
-          <Text style={{ color: c.text.primary }}>EXPO_PUBLIC_OCR_API_URL</Text>{' '}
+          <Text style={{ color: c.text.primary }}>
+            EXPO_PUBLIC_OCR_API_URL
+          </Text>{' '}
           must be a URL your phone can reach (HTTPS recommended);{' '}
           <Text style={{ color: c.text.primary }}>127.0.0.1</Text> points at the
           phone, not your computer.{'\n'}

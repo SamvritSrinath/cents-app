@@ -4,18 +4,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
 
 /**
- * @module Supabase Client
- * @owner Authentication
- * @updates 2024-12-31 - Simplified to use AsyncStorage per Supabase tutorial
+ * Single shared Supabase JS client for the app (Auth + PostgREST + Storage).
  *
- * Initializes the Supabase client for React Native/Expo.
- * Uses AsyncStorage for session persistence (works in Expo Go and dev builds).
+ * @remarks
+ * - `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` are inlined at bundle time.
+ * - Session persistence uses `AsyncStorage` (Expo Go and dev builds).
+ * - Registers one `AppState` listener to start/stop auth token auto-refresh with foreground/background (Supabase RN guidance).
  */
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey =
   process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || '';
 
+/** Configured client; import this instead of calling `createClient` elsewhere. */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: AsyncStorage,

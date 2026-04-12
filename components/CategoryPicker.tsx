@@ -121,61 +121,61 @@ export function CategoryPicker({
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  container: {
-    backgroundColor: colors.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '70%',
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  title: {
-    ...typography.heading3,
-    color: colors.text.primary,
-  },
-  closeButton: {
-    padding: spacing.xs,
-  },
-  list: {
-    padding: spacing.md,
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: 12,
-    marginBottom: spacing.xs,
-  },
-  itemSelected: {
-    backgroundColor: colors.card,
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  itemText: {
-    ...typography.body,
-    color: colors.text.primary,
-    flex: 1,
-  },
-  emoji: {
-    fontSize: 18,
-  },
-});
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-end',
+    },
+    container: {
+      backgroundColor: colors.background,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '70%',
+      paddingBottom: spacing.xl,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    title: {
+      ...typography.heading3,
+      color: colors.text.primary,
+    },
+    closeButton: {
+      padding: spacing.xs,
+    },
+    list: {
+      padding: spacing.md,
+    },
+    item: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderRadius: 12,
+      marginBottom: spacing.xs,
+    },
+    itemSelected: {
+      backgroundColor: colors.card,
+    },
+    iconContainer: {
+      width: 36,
+      height: 36,
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: spacing.md,
+    },
+    itemText: {
+      ...typography.body,
+      color: colors.text.primary,
+      flex: 1,
+    },
+    emoji: {
+      fontSize: 18,
+    },
+  });
 }

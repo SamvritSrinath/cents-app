@@ -13,7 +13,49 @@ npm run generate-ci-docs
 - **push:** `{"branches":["main","develop"]}`
 - **pull_request:** `{"branches":["main"]}`
 
-## Job: `lint-and-test`
+## Job: `lint`
+
+- **runs-on:** `ubuntu-latest`
+
+### 1. Action: actions/checkout@v4
+
+Uses `actions/checkout@v4`.
+
+### 2. Setup Node.js
+
+Uses `actions/setup-node@v4`.
+
+| Input | Value |
+| --- | --- |
+| `node-version` | `20` |
+| `cache` | `npm` |
+
+
+### 3. Install dependencies
+
+```text
+npm ci
+```
+
+### 4. Check formatting (Prettier)
+
+```text
+npm run format:check
+```
+
+### 5. Run linter
+
+```text
+npm run lint
+```
+
+### 6. Run TypeScript check
+
+```text
+npm run typecheck
+```
+
+## Job: `docs-verify`
 
 - **runs-on:** `ubuntu-latest`
 
@@ -49,47 +91,27 @@ node scripts/generate-ci-docs.mjs
 git diff --exit-code docs/generated/ci-pipeline.md
 ```
 
-### 6. Check formatting (Prettier)
+### 6. Generate API docs (TypeDoc)
 
 ```text
-npm run format:check
+npm run docs:api
 ```
 
-### 7. Run linter
+### 7. Verify API docs match repo
 
 ```text
-npm run lint
+git diff --exit-code docs/generated/api-md
 ```
 
-### 8. Run TypeScript check
-
-```text
-npm run typecheck
-```
-
-### 9. Run tests with coverage
-
-```text
-npm run test:ci
-```
-
-### 10. Expo doctor (informational)
-
-```text
-npx expo-doctor
-```
-
-## Job: `eas-build`
+## Job: `unit-test`
 
 - **runs-on:** `ubuntu-latest`
-- **needs:** `lint-and-test`
-- **if:** `github.ref == 'refs/heads/main' && github.event_name == 'push'`
 
 ### 1. Action: actions/checkout@v4
 
 Uses `actions/checkout@v4`.
 
-### 2. Action: actions/setup-node@v4
+### 2. Setup Node.js
 
 Uses `actions/setup-node@v4`.
 
@@ -99,25 +121,52 @@ Uses `actions/setup-node@v4`.
 | `cache` | `npm` |
 
 
-### 3. Setup Expo
-
-Uses `expo/expo-github-action@v8`.
-
-| Input | Value |
-| --- | --- |
-| `eas-version` | `latest` |
-| `token` | `${{ secrets.EXPO_TOKEN }}` |
-
-
-### 4. Install dependencies
+### 3. Install dependencies
 
 ```text
 npm ci
 ```
 
-### 5. Build development client
+### 4. Run tests with coverage
 
 ```text
-eas build --platform all --profile development --non-interactive
+npm run test:ci
+```
+
+### 5. Expo doctor
+
+```text
+npx expo-doctor
+```
+
+## Job: `e2e-smoke`
+
+- **runs-on:** `ubuntu-latest`
+- **needs:** `unit-test`
+
+### 1. Action: actions/checkout@v4
+
+Uses `actions/checkout@v4`.
+
+### 2. Setup Node.js
+
+Uses `actions/setup-node@v4`.
+
+| Input | Value |
+| --- | --- |
+| `node-version` | `20` |
+| `cache` | `npm` |
+
+
+### 3. Install dependencies
+
+```text
+npm ci
+```
+
+### 4. Bundle smoke (Android export)
+
+```text
+npm run test:e2e:ci
 ```
 

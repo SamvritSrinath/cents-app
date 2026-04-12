@@ -7,7 +7,30 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting (Prettier)
+        run: npm run format:check
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run TypeScript check
+        run: npm run typecheck
+
+  docs-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,43 +50,46 @@ jobs:
       - name: Verify generated CI doc matches repo
         run: git diff --exit-code docs/generated/ci-pipeline.md
 
-      - name: Check formatting (Prettier)
-        run: npm run format:check
+      - name: Generate API docs (TypeDoc)
+        run: npm run docs:api
 
-      - name: Run linter
-        run: npm run lint
+      - name: Verify API docs match repo
+        run: git diff --exit-code docs/generated/api-md
 
-      - name: Run TypeScript check
-        run: npm run typecheck
-
-      - name: Run tests with coverage
-        run: npm run test:ci
-
-      - name: Expo doctor (informational)
-        run: npx expo-doctor
-        continue-on-error: true
-
-  # EAS builds only on main to conserve build credits
-  eas-build:
-    needs: lint-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:ci
+
+      - name: Expo doctor
+        run: npx expo-doctor
+
+  e2e-smoke:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build development client
-        run: eas build --platform all --profile development --non-interactive
+      - name: Bundle smoke (Android export)
+        run: npm run test:e2e:ci

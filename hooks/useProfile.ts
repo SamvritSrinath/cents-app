@@ -1,15 +1,20 @@
 /**
- * @module useProfile
- * @owner Auth
- * @updates 2024-12-31 - Initial implementation
+ * Profile row in `public.profiles` plus helpers to update display name (also mirrors to Auth `user_metadata` when possible).
  *
- * Hook for managing user profile (display name, avatar).
+ * @remarks
+ * - Query key: `['profile']`.
+ * - If no profile row exists, attempts an upsert seeded from Auth metadata (`full_name` / `name`).
+ * - Updates call `supabase.auth.updateUser` when `display_name` changes, then upsert `profiles`; on schema drift, falls back to a synthetic profile in cache (see mutation implementation).
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types/database';
 
+/**
+ * @returns React Query `useQuery` for the profile, plus `updateProfile` (async mutate) and `isUpdating`.
+ * @throws From Supabase when fetches or critical updates fail (non-schema-drift paths).
+ */
 export function useProfile() {
   const queryClient = useQueryClient();
 

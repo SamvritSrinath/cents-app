@@ -1,9 +1,11 @@
 /**
- * @module useExpenses
- * @owner Expenses
- * @updates 2024-12-31 - Initial implementation with CRUD operations
+ * TanStack Query hooks for the `expenses` table, related `expense_line_items`, and joined `categories`.
  *
- * React Query hooks for expense CRUD operations with Supabase.
+ * @remarks
+ * - Every query and mutation requires an authenticated Supabase session; otherwise the queryFn throws `"Not authenticated"`.
+ * - Rows are always filtered with `.eq('user_id', user.id)` in application code; **RLS must still enforce** the same rule.
+ * - Successful create/update/delete mutations invalidate `['expenses']` and `['dashboard']` keys (and detail keys for updates).
+ * - Split expenses: when `line_items` are present, category/budget logic uses per-line `category_id` and amounts; see {@link CreateExpenseData.line_items}.
  */
 
 import {
@@ -18,24 +20,31 @@ import { Expense, Category, ExpenseLineItem } from '../types/database';
 const EXPENSES_KEY = ['expenses'];
 const PAGE_SIZE = 20;
 
-/** Nested select for category breakdown and list/detail UIs */
+/**
+ * PostgREST `select` fragment for expense rows with primary category and nested line items (each with its own category).
+ * Keep in sync with any screen that expects {@link ExpenseWithCategory}.
+ */
 export const EXPENSE_SELECT_WITH_LINES = `*, categories(*), expense_line_items(*, categories(*))`;
 
+/** One line on a split expense, including the joined category row (may be null if FK missing). */
 export interface ExpenseLineItemWithCategory extends ExpenseLineItem {
   categories: Category | null;
 }
 
+/** Expense row plus primary `categories` join and optional ordered `expense_line_items`. */
 export interface ExpenseWithCategory extends Expense {
   categories: Category | null;
   expense_line_items?: ExpenseLineItemWithCategory[] | null;
 }
 
+/** Payload line for create/update when splitting an expense across categories. */
 export interface ExpenseLineItemInput {
   name: string;
   amount: number;
   category_id: string | null;
 }
 
+/** Optional filters for the infinite expense list. */
 export interface ExpenseFilters {
   startDate?: string;
   endDate?: string;
@@ -43,6 +52,7 @@ export interface ExpenseFilters {
   searchQuery?: string;
 }
 
+/** Fields accepted by {@link useCreateExpense}; `line_items` triggers split behavior. */
 export interface CreateExpenseData {
   amount: number;
   currency?: string;
@@ -55,6 +65,7 @@ export interface CreateExpenseData {
   line_items?: ExpenseLineItemInput[];
 }
 
+/** Partial update by expense `id`; include `line_items` to replace or clear splits. */
 export interface UpdateExpenseData extends Partial<
   Omit<CreateExpenseData, 'line_items'>
 > {
@@ -64,7 +75,11 @@ export interface UpdateExpenseData extends Partial<
 }
 
 /**
- * Fetch expenses with infinite scroll pagination
+ * Infinite query of expenses (newest `expense_date` first), page size 20.
+ *
+ * @param filters - Optional date range, single category (matches header or any line), or merchant/description `ilike`.
+ * @returns `useInfiniteQuery` result; pages are {@link ExpenseWithCategory}[].
+ * @throws Error `"Not authenticated"` if there is no Supabase user.
  */
 export function useExpenses(filters?: ExpenseFilters) {
   return useInfiniteQuery({
@@ -144,7 +159,10 @@ export function useExpenses(filters?: ExpenseFilters) {
 }
 
 /**
- * Fetch a single expense by ID
+ * Single expense by id, scoped to the current user.
+ *
+ * @param id - Expense primary key, or `null` to disable the query.
+ * @throws Error `"Not authenticated"` if there is no Supabase user.
  */
 export function useExpense(id: string | null) {
   return useQuery({
@@ -181,7 +199,8 @@ export function useExpense(id: string | null) {
 }
 
 /**
- * Create a new expense
+ * Replace all line items for an expense (delete then insert). Used by create/update mutations.
+ * @throws PostgREST error on failure.
  */
 async function replaceExpenseLineItems(
   expenseId: string,
@@ -208,6 +227,12 @@ async function replaceExpenseLineItems(
   if (insErr) throw insErr;
 }
 
+/**
+ * Insert a row into `expenses`, optionally inserting `expense_line_items` in the same logical operation.
+ *
+ * @remarks If line insert fails, the parent expense row is deleted again to avoid orphans.
+ * @throws Error `"Not authenticated"` or Supabase errors from insert/line replace.
+ */
 export function useCreateExpense() {
   const queryClient = useQueryClient();
 
@@ -255,7 +280,9 @@ export function useCreateExpense() {
 }
 
 /**
- * Update an existing expense
+ * Patch expense fields and/or replace line items. Omitting `line_items` leaves lines unchanged.
+ *
+ * @throws Error `"Not authenticated"` or Supabase errors.
  */
 export function useUpdateExpense() {
   const queryClient = useQueryClient();
@@ -314,7 +341,9 @@ export function useUpdateExpense() {
 }
 
 /**
- * Delete an expense
+ * Hard-delete one expense owned by the current user (cascading line items depend on DB constraints).
+ *
+ * @throws Error `"Not authenticated"` or Supabase errors.
  */
 export function useDeleteExpense() {
   const queryClient = useQueryClient();
@@ -345,7 +374,11 @@ export function useDeleteExpense() {
 }
 
 /**
- * Get total spending for a date range
+ * Sum of `amount` for all expenses in `[startDate, endDate]` inclusive (`expense_date` column).
+ *
+ * @param startDate - ISO `YYYY-MM-DD` (local calendar semantics should match stored values).
+ * @param endDate - ISO `YYYY-MM-DD`, inclusive upper bound.
+ * @throws Error `"Not authenticated"` if there is no Supabase user.
  */
 export function useSpendingTotal(startDate: string, endDate: string) {
   return useQuery({

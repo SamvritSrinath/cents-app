@@ -1,9 +1,9 @@
 /**
- * @module useCategories
- * @owner Expenses
- * @updates 2024-12-31 - Initial implementation
+ * User-owned rows in `public.categories` (see `useCategories` query filter).
  *
- * React Query hooks for fetching and managing expense categories from Supabase.
+ * @remarks
+ * - Mutations always set `is_default: false` on insert; seeding defaults is a server/migration concern.
+ * - List query uses `staleTime` 10 minutes because categories change infrequently.
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,7 +13,10 @@ import { Category } from '../types/database';
 const CATEGORIES_KEY = ['categories'];
 
 /**
- * Fetch all categories (default + user-created)
+ * Categories with `user_id` equal to the signed-in user, ordered by name.
+ *
+ * @remarks Shared/default categories must be readable under the same predicate in your RLS (e.g. duplicated `user_id` or a separate query); this hook only applies `.eq('user_id', user.id)`.
+ * @throws Error `"Not authenticated"` if there is no Supabase user.
  */
 export function useCategories() {
   return useQuery({
@@ -30,7 +33,7 @@ export function useCategories() {
       const { data, error } = await supabase
         .from('categories')
         .select('*')
-        .or(`is_default.eq.true,user_id.eq.${user.id}`)
+        .eq('user_id', user.id)
         .order('name');
 
       if (error) throw error;
@@ -41,7 +44,7 @@ export function useCategories() {
 }
 
 /**
- * Get a single category by ID
+ * Single category by primary key; disabled when `id` is null.
  */
 export function useCategory(id: string | null) {
   return useQuery({
@@ -62,12 +65,14 @@ export function useCategory(id: string | null) {
   });
 }
 
+/** Payload for {@link useCreateCategory}. */
 export interface CreateCategoryData {
   name: string;
   color: string;
   icon?: string | null;
 }
 
+/** Insert a user category; invalidates the categories list on success. */
 export function useCreateCategory() {
   const queryClient = useQueryClient();
 
@@ -103,6 +108,7 @@ export function useCreateCategory() {
   });
 }
 
+/** Delete a non-default category owned by the user (`is_default` must be false). */
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
 

@@ -9,9 +9,11 @@ import {
   ActivityIndicator,
   ScrollView,
   Switch,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href, useFocusEffect } from 'expo-router';
+import Constants from 'expo-constants';
 import {
   User,
   LogOut,
@@ -41,8 +43,10 @@ import { getUserDisplayName } from '../../lib/userProfile';
 import {
   isLocalNotificationsSupported,
   scheduleTestNotificationAsync,
-  syncNotificationSchedulesAsync,
 } from '../../lib/notifications';
+import { syncNotificationsForCurrentSessionAsync } from '../../lib/notificationSessionSync';
+import { uploadProfileAvatarAsync } from '../../lib/avatarUpload';
+import * as ImagePicker from 'expo-image-picker';
 
 interface SettingsItemProps {
   colors: AppColors;
@@ -99,6 +103,7 @@ export default function SettingsScreen() {
   const [newName, setNewName] = useState(profile?.display_name || '');
   const [savedEmail, setSavedEmail] = useState('');
   const [preferencesLoading, setPreferencesLoading] = useState(true);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [preferences, setPreferences] = useState<DevicePreferences>({
     notificationsEnabled: true,
     receiptAlertsEnabled: true,
@@ -138,7 +143,7 @@ export default function SettingsScreen() {
   const updatePreferences = async (nextPreferences: DevicePreferences) => {
     setPreferences(nextPreferences);
     await saveDevicePreferences(nextPreferences);
-    await syncNotificationSchedulesAsync(nextPreferences);
+    await syncNotificationsForCurrentSessionAsync(nextPreferences, user);
 
     if (!nextPreferences.rememberEmailEnabled) {
       await clearSavedEmail();
@@ -160,6 +165,43 @@ export default function SettingsScreen() {
       const message =
         error instanceof Error ? error.message : 'Failed to update name';
       Alert.alert('Error', message);
+    }
+  };
+
+  const handlePickAvatar = async () => {
+    if (!user?.id) return;
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert(
+        'Photos',
+        'Allow photo access in Settings to set a profile picture.'
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.85,
+    });
+    if (result.canceled || !result.assets[0]?.uri) return;
+
+    setAvatarUploading(true);
+    try {
+      const publicUrl = await uploadProfileAvatarAsync(
+        user.id,
+        result.assets[0].uri
+      );
+      await updateProfile({ avatar_url: publicUrl });
+    } catch (error) {
+      const msg =
+        error instanceof Error ? error.message : 'Could not upload photo.';
+      Alert.alert(
+        'Avatar upload',
+        `${msg}\n\nCreate a public Storage bucket named "avatars" in Supabase (see docs/guide/getting-started.md) if you have not yet.`
+      );
+    } finally {
+      setAvatarUploading(false);
     }
   };
 
@@ -190,9 +232,23 @@ export default function SettingsScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
           <View style={styles.profileCard}>
-            <View style={styles.avatar}>
-              <User size={32} color={colors.text.secondary} />
-            </View>
+            <Pressable
+              onPress={() => void handlePickAvatar()}
+              disabled={avatarUploading}
+              style={styles.avatar}
+              accessibilityLabel="Change profile photo"
+            >
+              {avatarUploading ? (
+                <ActivityIndicator size="small" color={colors.accent.default} />
+              ) : profile?.avatar_url ? (
+                <Image
+                  source={{ uri: profile.avatar_url }}
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <User size={32} color={colors.text.secondary} />
+              )}
+            </Pressable>
             <View style={styles.profileInfo}>
               {isEditing ? (
                 <View style={styles.editNameRow}>
@@ -476,6 +532,11 @@ export default function SettingsScreen() {
                 Clear saved sign-in
               </Text>
             </Pressable>
+            <Text style={styles.sectionHint}>
+              Saved sign-in only remembers your email on this device
+              (SecureStore) to pre-fill the login screen. It never stores your
+              password.
+            </Text>
           </View>
         </View>
 
@@ -514,7 +575,9 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <Text style={styles.version}>Cents v1.0.0</Text>
+        <Text style={styles.version}>
+          Cents v{Constants.expoConfig?.version ?? '0.0.0'}
+        </Text>
         <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
@@ -588,6 +651,12 @@ function createStyles(colors: AppColors) {
       backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
+      overflow: 'hidden',
+    },
+    avatarImage: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
     },
     profileInfo: {
       marginLeft: spacing.md,

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "expand",
+  "entryPoints": ["lib/**/*.ts", "hooks/**/*.ts", "types/database.ts"],
+  "exclude": ["**/*.test.ts", "**/__mocks__/**", "**/node_modules/**"],
+  "out": "docs/generated/api-md",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "hideGenerator": true,
+  "disableSources": true,
+  "tsconfig": "./tsconfig.json",
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true
+}

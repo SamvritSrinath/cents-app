@@ -15,7 +15,13 @@ import React, {
   useCallback,
 } from 'react';
 import { Session, User } from '@supabase/supabase-js';
+import * as Linking from 'expo-linking';
 import { supabase } from '../lib/supabase';
+
+/** Redirect after email confirm / password reset; must match Supabase Auth redirect allow list. */
+function authEmailRedirectUrl(): string {
+  return Linking.createURL('/(auth)/login');
+}
 
 interface AuthContextType {
   user: User | null;
@@ -103,6 +109,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: authEmailRedirectUrl(),
+      },
     });
     if (error) throw error;
   }, []);
@@ -113,7 +122,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: authEmailRedirectUrl(),
+    });
     if (error) throw error;
   }, []);
 

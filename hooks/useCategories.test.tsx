@@ -22,7 +22,7 @@ const mockGetUser = supabase.auth.getUser as jest.Mock;
 const mockFrom = supabase.from as jest.Mock;
 
 const mockOrder = jest.fn();
-let mockOr: jest.Mock;
+let mockEq: jest.Mock;
 
 function wrapper(client: QueryClient) {
   return function W({ children }: { children: ReactNode }) {
@@ -39,11 +39,11 @@ describe('useCategories', () => {
       data: [
         {
           id: 'd1',
-          name: 'Default Cat',
+          name: 'Groceries',
           icon: '🥬',
           color: '#22c55e',
-          is_default: true,
-          user_id: null,
+          is_default: false,
+          user_id: 'user-1',
         },
       ],
       error: null,
@@ -51,15 +51,15 @@ describe('useCategories', () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'user-1' } },
     });
-    mockOr = jest.fn().mockReturnValue({ order: mockOrder });
+    mockEq = jest.fn().mockReturnValue({ order: mockOrder });
     mockFrom.mockReturnValue({
       select: jest.fn().mockReturnValue({
-        or: mockOr,
+        eq: mockEq,
       }),
     });
   });
 
-  it('fetches default and user categories from Supabase', async () => {
+  it('fetches user-owned categories from Supabase', async () => {
     const client = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -73,9 +73,9 @@ describe('useCategories', () => {
     });
 
     expect(result.current.data).toHaveLength(1);
-    expect(result.current.data?.[0].name).toBe('Default Cat');
+    expect(result.current.data?.[0].name).toBe('Groceries');
     expect(mockFrom).toHaveBeenCalledWith('categories');
-    expect(mockOr).toHaveBeenCalledWith('is_default.eq.true,user_id.eq.user-1');
+    expect(mockEq).toHaveBeenCalledWith('user_id', 'user-1');
   });
 
   it('throws when not authenticated', async () => {
