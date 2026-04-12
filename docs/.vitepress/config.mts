@@ -7,10 +7,16 @@ import { defineConfig } from 'vitepress';
 const repo = 'https://github.com/SamvritSrinath/cents-app';
 
 const VPRESS_DIR = dirname(fileURLToPath(import.meta.url));
-const API_INDEX_DEV = join(VPRESS_DIR, 'public/api/index.html');
+/** VitePress copies `docs/public` to dist, not `.vitepress/public`. */
+const API_INDEX_DEV = join(VPRESS_DIR, '../public/api/index.html');
 const API_INDEX_PREVIEW = join(VPRESS_DIR, 'dist/api/index.html');
 
-/** TypeDoc HTML lives under public/api; VitePress SPA would otherwise 404 on /api/. */
+/** Only the TypeDoc *root* (directory), not e.g. `/api/modules/...` or `/api/assets/...`. */
+function isTypeDocApiRootPath(pathname: string): boolean {
+  return /\/api\/?$/.test(pathname);
+}
+
+/** TypeDoc HTML under docs/public/api; Vite may pass URLs with or without `base`, so match on `/api` suffix. */
 function apiDirectoryIndexServe(): Plugin {
   return {
     name: 'cents-api-directory-index',
@@ -18,9 +24,7 @@ function apiDirectoryIndexServe(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const raw = (req as { url?: string }).url?.split('?')[0] ?? '';
-        const base = server.config.base;
-        const root = base.endsWith('/') ? base.slice(0, -1) : base;
-        if (raw !== `${root}/api` && raw !== `${root}/api/`) return next();
+        if (!isTypeDocApiRootPath(raw)) return next();
         if (!existsSync(API_INDEX_DEV)) return next();
         const out = res as {
           setHeader: (k: string, v: string) => void;
@@ -33,9 +37,7 @@ function apiDirectoryIndexServe(): Plugin {
     configurePreviewServer(server) {
       server.middlewares.use((req, res, next) => {
         const raw = (req as { url?: string }).url?.split('?')[0] ?? '';
-        const base = server.config.base;
-        const root = base.endsWith('/') ? base.slice(0, -1) : base;
-        if (raw !== `${root}/api` && raw !== `${root}/api/`) return next();
+        if (!isTypeDocApiRootPath(raw)) return next();
         if (!existsSync(API_INDEX_PREVIEW)) return next();
         const out = res as {
           setHeader: (k: string, v: string) => void;

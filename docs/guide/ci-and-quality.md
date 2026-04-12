@@ -42,7 +42,7 @@ Browse on GitHub: [`docs/generated/ci-pipeline.md`](https://github.com/SamvritSr
 | Output | Command | Committed? | Purpose |
 | --- | --- | --- | --- |
 | Markdown | `npm run docs:api` | Yes (`docs/generated/api-md`) | PR-friendly diffs in GitHub |
-| TypeDoc HTML | `npm run docs:api:html` | No (gitignored `public/api`) | Interactive API at **`/api/`** on the docs site; `docs:build` runs this automatically |
+| TypeDoc HTML | `npm run docs:api:html` | No (gitignored `docs/public/api`) | Interactive API at **`/api/`** on the docs site; `docs:build` runs this automatically |
 
 Public APIs should carry **TSDoc / JSDoc-style** comments; TypeDoc renders them.
 
