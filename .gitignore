@@ -39,10 +39,13 @@ yarn-error.*
 # tests
 coverage/
 
-# Docs site (VitePress + TypeDoc HTML under public/api)
+# Docs site (VitePress build output + TypeDoc HTML; both regenerated locally / on CI)
 docs/.vitepress/dist
 docs/.vitepress/cache
-docs/.vitepress/public/api
+# Legacy TypeDoc output path (remove from index if still tracked: git rm -r --cached docs/.vitepress/public/api)
+docs/.vitepress/public/api/
+# Current TypeDoc HTML output (typedoc.site.json)
+docs/public/api/
 
 # Local E2E smoke export (script uses temp dir; ignore if overridden)
 .expo-e2e-export

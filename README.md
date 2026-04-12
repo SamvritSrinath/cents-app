@@ -123,7 +123,7 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-key
 | `npm run format` / `npm run format:check` | Prettier |
 | `npm run generate-ci-docs` | Regenerate `docs/generated/ci-pipeline.md` |
 | `npm run docs:api` | Regenerate TypeDoc Markdown under `docs/generated/api-md` (CI verifies drift) |
-| `npm run docs:api:html` | TypeDoc HTML → `docs/.vitepress/public/api` (also run by `docs:build`) |
+| `npm run docs:api:html` | TypeDoc HTML → `docs/public/api` (also run by `docs:build`; VitePress copies `docs/public` to the site root) |
 | `npm run docs:dev` / `npm run docs:build` | VitePress dev / production site |
 | `npm run verify-api-docs` | Fail if API Markdown is out of date |
 | `npm run test:e2e:ci` | Android bundle export smoke (also runs in CI after unit tests) |

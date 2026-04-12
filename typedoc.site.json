@@ -3,7 +3,7 @@
   "entryPointStrategy": "expand",
   "entryPoints": ["lib/**/*.ts", "hooks/**/*.ts", "types/database.ts"],
   "exclude": ["**/*.test.ts", "**/__mocks__/**", "**/node_modules/**"],
-  "out": "docs/.vitepress/public/api",
+  "out": "docs/public/api",
   "readme": "none",
   "hideGenerator": true,
   "disableSources": true,
