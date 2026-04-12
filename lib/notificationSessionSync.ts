@@ -1,8 +1,5 @@
 /**
- * @module notificationSessionSync
- * @owner Notifications
- *
- * Bridges auth + today's spend into {@link syncNotificationSchedulesAsync}.
+ * Orchestrates notification schedule sync when auth session or spend context changes.
  */
 
 import type { DevicePreferences } from './devicePreferences';
@@ -10,7 +7,8 @@ import { syncNotificationSchedulesAsync } from './notifications';
 import { fetchTodaySpendSnapshotAsync } from './todaySpend';
 
 /**
- * Loads today's spend when signed in and syncs schedules; clears daily summary when signed out.
+ * When signed in: loads today’s spend snapshot and passes it into `syncNotificationSchedulesAsync`.
+ * When signed out: syncs with `sessionActive: false` so daily summary state clears appropriately.
  */
 export async function syncNotificationsForCurrentSessionAsync(
   preferences: DevicePreferences,

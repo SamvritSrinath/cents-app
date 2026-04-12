@@ -198,7 +198,7 @@ export default function SettingsScreen() {
         error instanceof Error ? error.message : 'Could not upload photo.';
       Alert.alert(
         'Avatar upload',
-        `${msg}\n\nCreate a public Storage bucket named "avatars" in Supabase (see docs/02-setup.md) if you have not yet.`
+        `${msg}\n\nCreate a public Storage bucket named "avatars" in Supabase (see docs/guide/getting-started.md) if you have not yet.`
       );
     } finally {
       setAvatarUploading(false);
@@ -533,8 +533,9 @@ export default function SettingsScreen() {
               </Text>
             </Pressable>
             <Text style={styles.sectionHint}>
-              Saved sign-in only remembers your email on this device (SecureStore)
-              to pre-fill the login screen. It never stores your password.
+              Saved sign-in only remembers your email on this device
+              (SecureStore) to pre-fill the login screen. It never stores your
+              password.
             </Text>
           </View>
         </View>

@@ -1,5 +1,9 @@
 /**
- * Client for the expensely-compatible PaddleOCR FastAPI service (`POST /ocr`).
+ * Receipt image pipeline: resize/compress with Expo, `multipart` upload to the shared FastAPI OCR service, and map JSON into {@link ParsedReceipt}.
+ *
+ * @remarks
+ * - Base URL: `EXPO_PUBLIC_OCR_API_URL` (no trailing slash); endpoint `POST {base}/ocr` field `file`.
+ * - Errors: prefer {@link readOcrHttpErrorMessage} on non-OK responses to surface FastAPI `detail`.
  */
 
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -10,12 +14,17 @@ import { ParsedReceipt } from '../types/database';
 const MAX_SIDE_PX = 1600;
 const JPEG_QUALITY = 0.85;
 
-interface OCRLineItem {
+/** One line item in the OCR JSON payload from the FastAPI `/ocr` response. */
+export interface OCRLineItem {
   name: string;
   price: number;
 }
 
-interface OCRResultJson {
+/**
+ * Raw JSON shape returned by the PaddleOCR FastAPI service before mapping to {@link ParsedReceipt}.
+ * Documented for TypeDoc; kept in sync with `expensely/ocr-service` response fields.
+ */
+export interface OCRResultJson {
   merchant?: string | null;
   total?: number | null;
   subtotal?: number | null;

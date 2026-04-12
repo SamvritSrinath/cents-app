@@ -8,7 +8,7 @@
 
 import { useState, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { LineChart } from 'react-native-gifted-charts';
+import { CurveType, LineChart } from 'react-native-gifted-charts';
 import { MonthlySpending } from '../../hooks/useDashboard';
 import { useTheme } from '../../contexts/ThemeContext';
 import { typography, spacing as spacingTokens } from '../../theme';
@@ -26,7 +26,7 @@ const END_SPACING = 16;
 
 export function SpendingTrendChart({
   data,
-  height = 200,
+  height = 220,
   currency = 'USD',
 }: SpendingTrendChartProps) {
   const { colors } = useTheme();
@@ -126,27 +126,34 @@ export function SpendingTrendChart({
         dataPointsRadius={4}
         areaChart
         curved
-        curvature={0.35}
+        curveType={CurveType.QUADRATIC}
+        curvature={0.2}
         startFillColor={colors.accent.default}
         endFillColor="transparent"
-        startOpacity={0.2}
-        endOpacity={0.01}
-        rulesType="none"
+        startOpacity={0.28}
+        endOpacity={0.02}
+        mostNegativeValue={0}
+        onlyPositive
+        rulesType="dashed"
+        rulesColor={colors.border}
+        dashWidth={4}
+        dashGap={6}
+        noOfSections={4}
         hideYAxisText
         yAxisColor="transparent"
-        xAxisColor="transparent"
+        xAxisColor={colors.border}
         yAxisThickness={0}
-        xAxisThickness={0}
+        xAxisThickness={1}
         xAxisLabelTextStyle={styles.axisLabel}
         initialSpacing={INITIAL_SPACING}
         endSpacing={END_SPACING}
         spacing={pointSpacing}
-        maxValue={maxValue * 1.2}
+        maxValue={maxValue * 1.15}
         disableScroll
         nestedScrollEnabled
         labelsExtraHeight={28}
         xAxisLabelsHeight={24}
-        overflowBottom={6}
+        overflowBottom={8}
         pointerConfig={pointerConfig}
       />
     </View>

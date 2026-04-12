@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/categoryIcons](../README.md) / getCategoryIcon
-
 # Function: getCategoryIcon()
 
 > **getCategoryIcon**(`name?`, `icon?`): `string`

@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/devicePreferences](../README.md) / DevicePreferences
-
 # Interface: DevicePreferences
 
 ## Properties

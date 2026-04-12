@@ -8,5 +8,7 @@
   "readme": "none",
   "hideGenerator": true,
   "disableSources": true,
-  "tsconfig": "./tsconfig.json"
+  "tsconfig": "./tsconfig.json",
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true
 }

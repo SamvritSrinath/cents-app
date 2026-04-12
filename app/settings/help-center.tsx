@@ -9,6 +9,12 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 const HELP_LINKS = [
   {
+    title: 'Documentation',
+    description:
+      'Guides, architecture, CI, and API reference for the mobile app.',
+    url: 'https://samvritsrinath.github.io/cents-app/',
+  },
+  {
     title: 'Cents Website',
     description: 'See the live web experience and latest updates.',
     url: 'https://cents-flax.vercel.app/',
@@ -16,7 +22,7 @@ const HELP_LINKS = [
   {
     title: 'GitHub Repository',
     description: 'Browse source code, issues, and release history.',
-    url: 'https://github.com/SamvritSrinath/cents',
+    url: 'https://github.com/SamvritSrinath/cents-app',
   },
 ];
 

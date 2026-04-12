@@ -1,17 +1,22 @@
 /**
- * Pure aggregation of expense rows into category totals.
- * When an expense has line items, amounts are allocated per line; otherwise the
- * expense amount goes to the expense's category_id.
+ * Pure functions to roll up expense rows (with optional line items) into per-category totals for charts and summaries.
+ *
+ * @remarks
+ * - If `expense_line_items` is non-empty, each line’s `amount` is attributed to that line’s `category_id`.
+ * - Otherwise the expense’s top-level `amount` is attributed to `category_id` (and joined `categories` metadata).
  */
 
+/** Display metadata for a category bucket. */
 export type CategoryMeta = { name: string; color: string };
 
+/** Minimal line shape for aggregation input. */
 export type LineForAggregation = {
   amount: number;
   category_id: string | null;
   categories: CategoryMeta | null;
 };
 
+/** Expense-shaped input: optional nested lines for split expenses. */
 export type ExpenseForCategoryAggregation = {
   amount: number;
   category_id: string | null;
@@ -22,6 +27,12 @@ export type ExpenseForCategoryAggregation = {
 const DEFAULT_UNCAT = 'Uncategorized';
 const DEFAULT_COLOR = '#6b7280';
 
+/**
+ * @param expenses - In-memory rows (e.g. from a Supabase select with line items).
+ * @param uncategorizedLabel - Label for null category id bucket.
+ * @param uncategorizedColor - Fallback color for uncategorized bucket.
+ * @returns Map from `category_id` (null allowed) to rolled-up amount and display name/color.
+ */
 export function aggregateSpendingByCategory(
   expenses: ExpenseForCategoryAggregation[],
   uncategorizedLabel: string = DEFAULT_UNCAT,

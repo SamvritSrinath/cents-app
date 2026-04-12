@@ -1,6 +1,11 @@
 {
   "name": "cents-app",
   "version": "0.6.0",
+  "description": "Android-first Expo expense tracker backed by Supabase",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SamvritSrinath/cents-app.git"
+  },
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -11,16 +16,22 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --watchman=false",
     "test:ci": "jest --ci --watchman=false --coverage --coverageReporters=text-summary --coverageReporters=text --forceExit",
+    "test:e2e:ci": "node scripts/bundle-e2e-smoke.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json}\"",
     "generate-ci-docs": "node scripts/generate-ci-docs.mjs",
     "verify-ci-docs": "node scripts/generate-ci-docs.mjs && git diff --exit-code docs/generated/ci-pipeline.md",
     "docs:api": "typedoc",
+    "docs:api:html": "typedoc --options typedoc.site.json",
+    "docs:dev": "node scripts/ensure-api-html.mjs && vitepress dev docs",
+    "docs:build": "npm run docs:api:html && vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "verify-api-docs": "node scripts/verify-api-docs.mjs"
   },
   "dependencies": {
     "@expo/ngrok": "^4.1.3",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/datetimepicker": "8.4.4",
     "@supabase/supabase-js": "^2.89.0",
     "@tanstack/react-query": "^5.90.12",
     "expo": "~54.0.33",
@@ -62,6 +73,7 @@
     "typedoc": "^0.28.18",
     "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "~5.9.2",
+    "vitepress": "^1.6.4",
     "yaml": "^2.8.3"
   },
   "overrides": {

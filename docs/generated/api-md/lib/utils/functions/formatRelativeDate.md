@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/utils](../README.md) / formatRelativeDate
-
 # Function: formatRelativeDate()
 
 > **formatRelativeDate**(`date`): `string`

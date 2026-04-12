@@ -1,5 +1,11 @@
-// Database types for Cents expense tracker
+/**
+ * Domain and Supabase row shapes used across hooks and screens.
+ *
+ * @remarks
+ * `Database` mirrors PostgREST `Insert`/`Update` helpers; keep aligned with migrations and generated types if you adopt `supabase gen types`.
+ */
 
+/** Single expense row in `public.expenses`. */
 export interface Expense {
   id: string;
   user_id: string;
@@ -14,6 +20,7 @@ export interface Expense {
   updated_at: string;
 }
 
+/** Category row: user-owned or shared default (`is_default`, `user_id` may be null per RLS). */
 export interface Category {
   id: string;
   name: string;
@@ -77,7 +84,9 @@ export interface Profile {
   updated_at: string;
 }
 
-// Supabase database schema types
+/**
+ * Minimal generated-style schema map for typed `from('…').insert()` / `.update()` calls.
+ */
 export interface Database {
   public: {
     Tables: {

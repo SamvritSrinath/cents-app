@@ -1,14 +1,8 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [types/database](../README.md) / ExpenseLineItem
-
 # Interface: ExpenseLineItem
 
 ## Extended by
 
-- [`ExpenseLineItemWithCategory`](../../../useExpenses/interfaces/ExpenseLineItemWithCategory.md)
+- [`ExpenseLineItemWithCategory`](../../../hooks/useExpenses/interfaces/ExpenseLineItemWithCategory.md)
 
 ## Properties
 

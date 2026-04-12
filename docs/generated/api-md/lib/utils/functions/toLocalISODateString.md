@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/utils](../README.md) / toLocalISODateString
-
 # Function: toLocalISODateString()
 
 > **toLocalISODateString**(`d`): `string`

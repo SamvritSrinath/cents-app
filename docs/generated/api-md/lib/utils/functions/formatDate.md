@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/utils](../README.md) / formatDate
-
 # Function: formatDate()
 
 > **formatDate**(`date`, `options?`): `string`
@@ -18,7 +12,7 @@ Format date for display
 
 ### options?
 
-`DateTimeFormatOptions` = `...`
+`DateTimeFormatOptions` = `US_SHORT_DATE_OPTIONS`
 
 ## Returns
 

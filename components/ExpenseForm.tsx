@@ -20,7 +20,11 @@ import {
   Modal,
   Animated,
   useWindowDimensions,
+  useColorScheme,
 } from 'react-native';
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Calendar,
@@ -38,7 +42,13 @@ import { ReceiptScanner } from './ReceiptScanner';
 import { suggestCategoryIdFromReceiptInput } from '../lib/receiptCategorization';
 import { normalizeExpenseDateFromOcr } from '../lib/receiptOcr';
 import { getCategoryIcon } from '../lib/categoryIcons';
-import { formatCurrency, toLocalISODateString } from '../lib/utils';
+import {
+  formatCurrency,
+  toLocalISODateString,
+  formatUsShortDate,
+  isValidIsoDateString,
+  parseCalendarOrDateString,
+} from '../lib/utils';
 import { typography, spacing } from '../theme';
 import { AppColors } from '../theme/colors';
 import { useTheme } from '../contexts/ThemeContext';
@@ -97,6 +107,27 @@ export function ExpenseForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [hasAutoCategorized, setHasAutoCategorized] = useState(false);
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const colorScheme = useColorScheme();
+
+  const datePickerValue = useMemo(() => {
+    if (isValidIsoDateString(expenseDate)) {
+      return parseCalendarOrDateString(expenseDate);
+    }
+    return new Date();
+  }, [expenseDate]);
+
+  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (event.type === 'dismissed') {
+      return;
+    }
+    if (date && !Number.isNaN(date.getTime())) {
+      setExpenseDate(toLocalISODateString(date));
+    }
+  };
 
   const [receiptLines, setReceiptLines] = useState<ReceiptLine[]>(() =>
     (initialData?.line_items ?? []).map((li) => ({
@@ -203,8 +234,8 @@ export function ExpenseForm({
       newErrors.amount = 'Please enter a valid amount';
     }
 
-    if (!expenseDate) {
-      newErrors.date = 'Please select a date';
+    if (!expenseDate || !isValidIsoDateString(expenseDate)) {
+      newErrors.date = 'Please select a valid date';
     }
 
     if (splitByLine && canSplit) {
@@ -411,20 +442,27 @@ export function ExpenseForm({
           </Text>
         </View>
 
-        {/* Date Input */}
+        {/* Date — stored as YYYY-MM-DD; shown as MM/DD/YYYY */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Date *</Text>
-          <View style={styles.inputWithIcon}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.inputWithIcon,
+              errors.date ? styles.inputError : null,
+              pressed ? styles.datePressablePressed : null,
+            ]}
+            onPress={() => setShowDatePicker(true)}
+            testID="date-input"
+            accessibilityRole="button"
+            accessibilityLabel="Expense date, opens calendar"
+          >
             <Calendar size={20} color={colors.text.muted} />
-            <TextInput
-              style={styles.textInput}
-              value={expenseDate}
-              onChangeText={setExpenseDate}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.text.muted}
-              testID="date-input"
-            />
-          </View>
+            <Text style={styles.dateDisplayText}>
+              {isValidIsoDateString(expenseDate)
+                ? formatUsShortDate(expenseDate)
+                : 'MM/DD/YYYY'}
+            </Text>
+          </Pressable>
           {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
         </View>
 
@@ -587,6 +625,52 @@ export function ExpenseForm({
           </Animated.View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showDatePicker && Platform.OS === 'ios'}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDatePicker(false)}
+      >
+        <View style={styles.datePickerOverlay}>
+          <Pressable
+            style={styles.datePickerBackdrop}
+            onPress={() => setShowDatePicker(false)}
+            accessibilityLabel="Dismiss calendar"
+          />
+          <View
+            style={[
+              styles.datePickerSheet,
+              { paddingBottom: Math.max(insets.bottom, spacing.md) },
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
+            <View style={styles.datePickerHeader}>
+              <Text style={styles.datePickerTitle}>Expense date</Text>
+              <Pressable onPress={() => setShowDatePicker(false)} hitSlop={12}>
+                <Text style={styles.datePickerDone}>Done</Text>
+              </Pressable>
+            </View>
+            <DateTimePicker
+              value={datePickerValue}
+              mode="date"
+              display="inline"
+              themeVariant={colorScheme === 'dark' ? 'dark' : 'light'}
+              onChange={handleDateChange}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {Platform.OS === 'android' && showDatePicker ? (
+        <DateTimePicker
+          value={datePickerValue}
+          mode="date"
+          display="default"
+          themeVariant={colorScheme === 'dark' ? 'dark' : 'light'}
+          onChange={handleDateChange}
+        />
+      ) : null}
     </KeyboardAvoidingView>
   );
 }
@@ -659,6 +743,53 @@ function createStyles(colors: AppColors) {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     gap: spacing.sm,
+  },
+  datePressablePressed: {
+    opacity: 0.85,
+  },
+  dateDisplayText: {
+    flex: 1,
+    ...typography.body,
+    color: colors.text.primary,
+  },
+  datePickerOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  datePickerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  datePickerSheet: {
+    position: 'relative',
+    zIndex: 1,
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  datePickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  datePickerTitle: {
+    ...typography.body,
+    color: colors.text.primary,
+    fontWeight: '600',
+  },
+  datePickerDone: {
+    ...typography.body,
+    color: colors.accent.default,
+    fontWeight: '600',
   },
   textInput: {
     flex: 1,

@@ -1,12 +1,8 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/categoryAggregation](../README.md) / LineForAggregation
-
 # Type Alias: LineForAggregation
 
 > **LineForAggregation** = `object`
+
+Minimal line shape for aggregation input.
 
 ## Properties
 

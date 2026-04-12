@@ -1,10 +1,6 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [types/database](../README.md) / Database
-
 # Interface: Database
+
+Minimal generated-style schema map for typed `from('…').insert()` / `.update()` calls.
 
 ## Properties
 

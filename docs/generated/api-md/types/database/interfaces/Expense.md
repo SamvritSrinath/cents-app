@@ -1,14 +1,10 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [types/database](../README.md) / Expense
-
 # Interface: Expense
+
+Single expense row in `public.expenses`.
 
 ## Extended by
 
-- [`ExpenseWithCategory`](../../../useExpenses/interfaces/ExpenseWithCategory.md)
+- [`ExpenseWithCategory`](../../../hooks/useExpenses/interfaces/ExpenseWithCategory.md)
 
 ## Properties
 

@@ -1,10 +1,6 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [types/database](../README.md) / Category
-
 # Interface: Category
+
+Category row: user-owned or shared default (`is_default`, `user_id` may be null per RLS).
 
 ## Properties
 

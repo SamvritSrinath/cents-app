@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/notifications](../README.md) / getNotificationPlan
-
 # Function: getNotificationPlan()
 
 > **getNotificationPlan**(`preferences`): `object`

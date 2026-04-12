@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/utils](../README.md) / formatCurrency
-
 # Function: formatCurrency()
 
 > **formatCurrency**(`amount`, `currency?`, `locale?`): `string`

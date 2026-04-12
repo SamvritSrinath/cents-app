@@ -1,9 +1,10 @@
 /**
- * @module useDashboard
- * @owner Dashboard
- * @updates 2024-12-31 - Initial implementation with analytics
+ * Dashboard analytics: month summaries, rolling weeks, merchants, category breakdown, trends, and recent activity.
  *
- * React Query hooks for dashboard statistics and charts.
+ * @remarks
+ * - Query key prefix: `['dashboard', ...]`.
+ * - Most hooks use `staleTime` around two minutes unless noted.
+ * - Category charts use `aggregateSpendingByCategory` from `lib/categoryAggregation` on in-memory expense rows.
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -89,7 +90,8 @@ function getRollingWeekPairRanges(): {
 }
 
 /**
- * Dashboard summary statistics
+ * This month vs last month totals, percent change, and total expense count for the user.
+ * @throws Error `"Not authenticated"` if there is no Supabase user.
  */
 export function useDashboardStats() {
   return useQuery({
@@ -158,7 +160,8 @@ export function useDashboardStats() {
 }
 
 /**
- * Compare spend in the last 7 days vs the previous 7 days (local calendar dates).
+ * Compare spend in the last 7 local calendar days vs the prior 7 days.
+ * @throws Error `"Not authenticated"` if there is no Supabase user.
  */
 export function useWeekComparison() {
   return useQuery({
@@ -205,7 +208,8 @@ export function useWeekComparison() {
 }
 
 /**
- * Top merchants by spend in the current calendar month.
+ * Top N merchants by summed `amount` in the current calendar month (unknown/empty merchant → `"Unknown"`).
+ * @param limit - Max rows after sorting descending by spend (default 5).
  */
 export function useTopMerchants(limit: number = 5) {
   return useQuery({
@@ -250,7 +254,8 @@ export function useTopMerchants(limit: number = 5) {
 }
 
 /**
- * Spending breakdown by category (for pie chart)
+ * Current calendar month spending allocated by category, including split line items via `aggregateSpendingByCategory`.
+ * @returns Percentages are shares of the month total (0 if no spend).
  */
 export function useSpendingByCategory() {
   return useQuery({
@@ -310,7 +315,8 @@ export function useSpendingByCategory() {
 }
 
 /**
- * Monthly spending trend (for line chart)
+ * Per-calendar-month totals for the last `months` months (including current), one Supabase query per month.
+ * @param months - Number of past months to include (default 6); older months first in the returned array.
  */
 export function useSpendingTrend(months: number = 6) {
   return useQuery({
@@ -371,7 +377,7 @@ export function useSpendingTrend(months: number = 6) {
 }
 
 /**
- * Recent expenses for dashboard widget
+ * Latest `limit` expenses for the user (by `expense_date` desc) using the same select shape as `useExpenses` (`EXPENSE_SELECT_WITH_LINES`).
  */
 export function useRecentExpenses(limit: number = 5) {
   return useQuery({

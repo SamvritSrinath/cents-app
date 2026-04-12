@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [types/database](../README.md) / BudgetProgressRow
-
 # Interface: BudgetProgressRow
 
 Row from Supabase RPC get_budget_progress

@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/notifications](../README.md) / NotificationSyncContext
-
 # Type Alias: NotificationSyncContext
 
 > **NotificationSyncContext** = `object`

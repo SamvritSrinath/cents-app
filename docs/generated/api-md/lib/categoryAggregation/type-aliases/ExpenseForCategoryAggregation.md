@@ -1,12 +1,8 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/categoryAggregation](../README.md) / ExpenseForCategoryAggregation
-
 # Type Alias: ExpenseForCategoryAggregation
 
 > **ExpenseForCategoryAggregation** = `object`
+
+Expense-shaped input: optional nested lines for split expenses.
 
 ## Properties
 

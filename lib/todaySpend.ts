@@ -1,20 +1,19 @@
 /**
- * @module todaySpend
- * @owner Notifications
- *
- * Today's expense total for local calendar day (matches expense_date in DB).
+ * Lightweight read of today’s spending for notification copy and session sync.
  */
 
 import { supabase } from './supabase';
 import { toLocalISODateString } from './utils';
 
+/** Aggregated total and dominant currency code for UI strings. */
 export interface TodaySpendSnapshot {
   total: number;
   currency: string;
 }
 
 /**
- * Sum amounts for the current user's expenses dated today (device local date).
+ * Sum `amount` for rows where `expense_date` equals today’s local `YYYY-MM-DD`.
+ * @returns `null` if unauthenticated or on query error (caller treats as unknown spend).
  */
 export async function fetchTodaySpendSnapshotAsync(): Promise<TodaySpendSnapshot | null> {
   const {

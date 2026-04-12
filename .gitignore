@@ -39,6 +39,14 @@ yarn-error.*
 # tests
 coverage/
 
+# Docs site (VitePress + TypeDoc HTML under public/api)
+docs/.vitepress/dist
+docs/.vitepress/cache
+docs/.vitepress/public/api
+
+# Local E2E smoke export (script uses temp dir; ignore if overridden)
+.expo-e2e-export
+
 # generated native folders
 /ios
 /android

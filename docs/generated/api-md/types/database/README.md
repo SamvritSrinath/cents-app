@@ -1,9 +1,3 @@
-[**cents-app**](../../README.md)
-
-***
-
-[cents-app](../../README.md) / types/database
-
 # types/database
 
 ## Interfaces

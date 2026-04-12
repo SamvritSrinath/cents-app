@@ -230,11 +230,16 @@ export default function DashboardScreen() {
 
         {/* Spending Trend Chart */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Spending Trend</Text>
+          <Text style={[styles.sectionTitle, styles.sectionTitleCompact]}>
+            Spending Trend
+          </Text>
+          <Text style={styles.sectionSubtitle}>
+            Total spend per month · last 6 months
+          </Text>
           <View style={styles.chartCard}>
             <SpendingTrendChart
               data={trendData || []}
-              height={180}
+              height={200}
               currency={defaultCurrency}
             />
           </View>
@@ -410,6 +415,14 @@ function createStyles(colors: AppColors) {
     sectionTitle: {
       ...typography.heading3,
       color: colors.text.primary,
+      marginBottom: spacing.md,
+    },
+    sectionTitleCompact: {
+      marginBottom: spacing.xs,
+    },
+    sectionSubtitle: {
+      ...typography.caption,
+      color: colors.text.muted,
       marginBottom: spacing.md,
     },
     viewAllButton: {

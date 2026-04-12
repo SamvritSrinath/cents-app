@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/receiptOcr](../README.md) / normalizeExpenseDateFromOcr
-
 # Function: normalizeExpenseDateFromOcr()
 
 > **normalizeExpenseDateFromOcr**(`raw`): `string` \| `null`

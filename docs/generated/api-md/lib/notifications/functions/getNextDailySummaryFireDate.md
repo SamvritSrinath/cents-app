@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/notifications](../README.md) / getNextDailySummaryFireDate
-
 # Function: getNextDailySummaryFireDate()
 
 > **getNextDailySummaryFireDate**(`hour?`, `minute?`): `Date`

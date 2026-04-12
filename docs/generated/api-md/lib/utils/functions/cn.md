@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/utils](../README.md) / cn
-
 # Function: cn()
 
 > **cn**(...`classes`): `string`

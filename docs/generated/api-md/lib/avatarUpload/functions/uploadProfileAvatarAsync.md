@@ -1,9 +1,3 @@
-[**cents-app**](../../../README.md)
-
-***
-
-[cents-app](../../../README.md) / [lib/avatarUpload](../README.md) / uploadProfileAvatarAsync
-
 # Function: uploadProfileAvatarAsync()
 
 > **uploadProfileAvatarAsync**(`userId`, `localUri`): `Promise`\<`string`\>

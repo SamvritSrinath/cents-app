@@ -1,10 +1,9 @@
-[**cents-app**](../../README.md)
-
-***
-
-[cents-app](../../README.md) / lib/receiptOcr
-
 # lib/receiptOcr
+
+## Interfaces
+
+- [OCRLineItem](interfaces/OCRLineItem.md)
+- [OCRResultJson](interfaces/OCRResultJson.md)
 
 ## Functions
 
