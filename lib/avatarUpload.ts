@@ -17,7 +17,10 @@ export async function uploadProfileAvatarAsync(
 ): Promise<string> {
   const rawExt = localUri.split('.').pop()?.toLowerCase();
   const ext =
-    rawExt === 'png' || rawExt === 'webp' || rawExt === 'jpg' || rawExt === 'jpeg'
+    rawExt === 'png' ||
+    rawExt === 'webp' ||
+    rawExt === 'jpg' ||
+    rawExt === 'jpeg'
       ? rawExt === 'jpeg'
         ? 'jpg'
         : rawExt
@@ -26,11 +29,7 @@ export async function uploadProfileAvatarAsync(
   const response = await fetch(localUri);
   const buffer = await response.arrayBuffer();
   const contentType =
-    ext === 'png'
-      ? 'image/png'
-      : ext === 'webp'
-        ? 'image/webp'
-        : 'image/jpeg';
+    ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
 
   const { error: uploadError } = await supabase.storage
     .from(AVATAR_BUCKET)

@@ -114,9 +114,9 @@ export default function CategoriesScreen() {
     null
   );
   const [editAmount, setEditAmount] = useState('');
-  const [editPeriod, setEditPeriod] = useState<
-    'weekly' | 'monthly' | 'yearly'
-  >('monthly');
+  const [editPeriod, setEditPeriod] = useState<'weekly' | 'monthly' | 'yearly'>(
+    'monthly'
+  );
   const [categoryName, setCategoryName] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLOR_CHOICES[0]);
   const [selectedEmoji, setSelectedEmoji] = useState('📦');

@@ -42,9 +42,7 @@ export function isValidIsoDateString(s: string): boolean {
   const [y, mo, day] = s.split('-').map(Number);
   const d = new Date(y, mo - 1, day);
   return (
-    d.getFullYear() === y &&
-    d.getMonth() === mo - 1 &&
-    d.getDate() === day
+    d.getFullYear() === y && d.getMonth() === mo - 1 && d.getDate() === day
   );
 }
 

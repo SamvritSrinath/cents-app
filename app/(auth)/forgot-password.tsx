@@ -114,69 +114,69 @@ export default function ForgotPasswordScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-    marginTop: -spacing.xxl,
-  },
-  title: {
-    ...typography.heading1,
-    color: colors.text.primary,
-    marginTop: spacing.lg,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
-    textAlign: 'center',
-  },
-  error: {
-    ...typography.caption,
-    color: colors.semantic.error,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-  form: {
-    width: '100%',
-    marginTop: spacing.xl,
-    gap: spacing.md,
-  },
-  input: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.md,
-    color: colors.text.primary,
-    ...typography.body,
-  },
-  button: {
-    backgroundColor: colors.accent.default,
-    paddingVertical: spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '600',
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.md,
+    },
+    backButton: {
+      padding: spacing.sm,
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.xl,
+      marginTop: -spacing.xxl,
+    },
+    title: {
+      ...typography.heading1,
+      color: colors.text.primary,
+      marginTop: spacing.lg,
+    },
+    subtitle: {
+      ...typography.body,
+      color: colors.text.secondary,
+      marginTop: spacing.xs,
+      textAlign: 'center',
+    },
+    error: {
+      ...typography.caption,
+      color: colors.semantic.error,
+      marginTop: spacing.md,
+      textAlign: 'center',
+    },
+    form: {
+      width: '100%',
+      marginTop: spacing.xl,
+      gap: spacing.md,
+    },
+    input: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.md,
+      color: colors.text.primary,
+      ...typography.body,
+    },
+    button: {
+      backgroundColor: colors.accent.default,
+      paddingVertical: spacing.md,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginTop: spacing.sm,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '600',
+    },
+  });
 }

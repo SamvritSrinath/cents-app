@@ -199,109 +199,109 @@ export default function LoginScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  title: {
-    ...typography.heading1,
-    color: colors.text.primary,
-    marginTop: spacing.lg,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
-  },
-  error: {
-    ...typography.caption,
-    color: colors.semantic.error,
-    marginTop: spacing.md,
-    textAlign: 'center',
-    paddingHorizontal: spacing.md,
-  },
-  form: {
-    width: '100%',
-    marginTop: spacing.xl,
-    gap: spacing.md,
-  },
-  inputContainer: {
-    position: 'relative',
-  },
-  input: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.md,
-    color: colors.text.primary,
-    ...typography.body,
-  },
-  passwordInput: {
-    paddingRight: 50,
-  },
-  eyeButton: {
-    position: 'absolute',
-    right: spacing.md,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-  },
-  forgotLink: {
-    alignSelf: 'flex-end',
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  switchTextGroup: {
-    flex: 1,
-  },
-  switchLabel: {
-    ...typography.caption,
-    color: colors.text.primary,
-    fontWeight: '600',
-  },
-  switchHint: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 2,
-  },
-  button: {
-    backgroundColor: colors.accent.default,
-    paddingVertical: spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    marginTop: spacing.xl,
-  },
-  footerText: {
-    ...typography.caption,
-    color: colors.text.secondary,
-  },
-  linkText: {
-    ...typography.caption,
-    color: colors.accent.default,
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.xl,
+    },
+    title: {
+      ...typography.heading1,
+      color: colors.text.primary,
+      marginTop: spacing.lg,
+    },
+    subtitle: {
+      ...typography.body,
+      color: colors.text.secondary,
+      marginTop: spacing.xs,
+    },
+    error: {
+      ...typography.caption,
+      color: colors.semantic.error,
+      marginTop: spacing.md,
+      textAlign: 'center',
+      paddingHorizontal: spacing.md,
+    },
+    form: {
+      width: '100%',
+      marginTop: spacing.xl,
+      gap: spacing.md,
+    },
+    inputContainer: {
+      position: 'relative',
+    },
+    input: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.md,
+      color: colors.text.primary,
+      ...typography.body,
+    },
+    passwordInput: {
+      paddingRight: 50,
+    },
+    eyeButton: {
+      position: 'absolute',
+      right: spacing.md,
+      top: 0,
+      bottom: 0,
+      justifyContent: 'center',
+    },
+    forgotLink: {
+      alignSelf: 'flex-end',
+    },
+    switchRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.md,
+      paddingVertical: spacing.xs,
+    },
+    switchTextGroup: {
+      flex: 1,
+    },
+    switchLabel: {
+      ...typography.caption,
+      color: colors.text.primary,
+      fontWeight: '600',
+    },
+    switchHint: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 2,
+    },
+    button: {
+      backgroundColor: colors.accent.default,
+      paddingVertical: spacing.md,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginTop: spacing.sm,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '600',
+    },
+    footer: {
+      flexDirection: 'row',
+      marginTop: spacing.xl,
+    },
+    footerText: {
+      ...typography.caption,
+      color: colors.text.secondary,
+    },
+    linkText: {
+      ...typography.caption,
+      color: colors.accent.default,
+    },
+  });
 }

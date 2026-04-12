@@ -256,170 +256,170 @@ export default function ExpenseDetailScreen() {
 
 function createStyles(colors: AppColors) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing.md,
-  },
-  backButton: {
-    backgroundColor: colors.accent.default,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    ...typography.body,
-    color: colors.background,
-    fontWeight: '600',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerButton: {
-    padding: spacing.xs,
-  },
-  title: {
-    flex: 1,
-    ...typography.heading2,
-    color: colors.text.primary,
-    marginLeft: spacing.sm,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.md,
-  },
-  amountSection: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  amount: {
-    fontSize: 48,
-    fontWeight: '700',
-    color: colors.text.primary,
-  },
-  detailsCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  detailLabel: {
-    ...typography.caption,
-    color: colors.text.muted,
-    textTransform: 'uppercase',
-  },
-  detailValue: {
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  detailNotesBlock: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    alignSelf: 'stretch',
-  },
-  detailNotesBody: {
-    ...typography.body,
-    color: colors.text.primary,
-    marginTop: spacing.xs,
-    width: '100%',
-  },
-  linkButton: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    borderRadius: 8,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  linkText: {
-    ...typography.caption,
-    color: colors.accent.default,
-    fontWeight: '600',
-  },
-  categoryBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  categoryDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  linesCard: {
-    marginTop: spacing.lg,
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  linesTitle: {
-    ...typography.caption,
-    color: colors.text.muted,
-    textTransform: 'uppercase',
-    marginBottom: spacing.md,
-    letterSpacing: 0.5,
-  },
-  lineRow: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  lineRowMain: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  lineName: {
-    ...typography.body,
-    color: colors.text.primary,
-    flex: 1,
-    fontWeight: '500',
-  },
-  lineAmount: {
-    ...typography.body,
-    color: colors.text.secondary,
-    fontWeight: '600',
-  },
-  lineCategory: {
-    ...typography.caption,
-    color: colors.text.muted,
-    marginTop: 4,
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.xl,
+    },
+    errorText: {
+      ...typography.body,
+      color: colors.text.secondary,
+      marginBottom: spacing.md,
+    },
+    backButton: {
+      backgroundColor: colors.accent.default,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.lg,
+      borderRadius: 8,
+    },
+    backButtonText: {
+      ...typography.body,
+      color: colors.background,
+      fontWeight: '600',
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerButton: {
+      padding: spacing.xs,
+    },
+    title: {
+      flex: 1,
+      ...typography.heading2,
+      color: colors.text.primary,
+      marginLeft: spacing.sm,
+    },
+    headerActions: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    content: {
+      flex: 1,
+      padding: spacing.md,
+    },
+    amountSection: {
+      alignItems: 'center',
+      paddingVertical: spacing.xl,
+    },
+    amount: {
+      fontSize: 48,
+      fontWeight: '700',
+      color: colors.text.primary,
+    },
+    detailsCard: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      padding: spacing.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    detailLabel: {
+      ...typography.caption,
+      color: colors.text.muted,
+      textTransform: 'uppercase',
+    },
+    detailValue: {
+      ...typography.body,
+      color: colors.text.primary,
+    },
+    detailNotesBlock: {
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      alignSelf: 'stretch',
+    },
+    detailNotesBody: {
+      ...typography.body,
+      color: colors.text.primary,
+      marginTop: spacing.xs,
+      width: '100%',
+    },
+    linkButton: {
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.md,
+      borderRadius: 8,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    linkText: {
+      ...typography.caption,
+      color: colors.accent.default,
+      fontWeight: '600',
+    },
+    categoryBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
+    categoryDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+    },
+    linesCard: {
+      marginTop: spacing.lg,
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      padding: spacing.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    linesTitle: {
+      ...typography.caption,
+      color: colors.text.muted,
+      textTransform: 'uppercase',
+      marginBottom: spacing.md,
+      letterSpacing: 0.5,
+    },
+    lineRow: {
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    lineRowMain: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+    },
+    lineName: {
+      ...typography.body,
+      color: colors.text.primary,
+      flex: 1,
+      fontWeight: '500',
+    },
+    lineAmount: {
+      ...typography.body,
+      color: colors.text.secondary,
+      fontWeight: '600',
+    },
+    lineCategory: {
+      ...typography.caption,
+      color: colors.text.muted,
+      marginTop: 4,
+    },
+  });
 }

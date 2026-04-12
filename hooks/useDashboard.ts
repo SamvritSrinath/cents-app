@@ -175,7 +175,8 @@ export function useWeekComparison() {
         throw new Error('Not authenticated');
       }
 
-      const { thisStart, thisEnd, lastStart, lastEnd } = getRollingWeekPairRanges();
+      const { thisStart, thisEnd, lastStart, lastEnd } =
+        getRollingWeekPairRanges();
 
       const [{ data: thisData, error: e1 }, { data: lastData, error: e2 }] =
         await Promise.all([

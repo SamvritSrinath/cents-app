@@ -68,11 +68,10 @@ export function SpendingTrendChart({
         const list = Array.isArray(items) ? items : [];
         const first = list[0] as { value?: number } | undefined;
         const raw = first?.value;
-        const value =
-          typeof raw === 'number' && !Number.isNaN(raw) ? raw : 0;
+        const value = typeof raw === 'number' && !Number.isNaN(raw) ? raw : 0;
         const monthLabel =
           pointerIndex >= 0 && pointerIndex < chartData.length
-            ? chartData[pointerIndex]?.label ?? ''
+            ? (chartData[pointerIndex]?.label ?? '')
             : '';
         return (
           <View
